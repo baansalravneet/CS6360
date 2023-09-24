@@ -1,19 +1,15 @@
 package com.librarysystem.services;
 
-import com.librarysystem.db.dao.StoredBook;
+import com.librarysystem.db.repositories.AuthorRepository;
 import com.librarysystem.db.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class BookService {
+public class DatabaseService {
 
     @Autowired
     private BookRepository bookRepository;
+    private AuthorRepository authorRepository;
 
-    public List<StoredBook> list() {
-        return bookRepository.findAll();
-    }
 }

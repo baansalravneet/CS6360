@@ -1,26 +1,32 @@
 package com.librarysystem.db.dao;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-@Entity
+import java.util.Set;
+
+@Entity(name = "books")
 public class StoredBook {
     @Id
-    @GeneratedValue
-    private final Long id;
-    private final String name;
+    private final String isbn;
+    private final String title;
+    @ManyToMany(mappedBy = "books")
+    private final Set<StoredAuthor> authors;
 
-    public StoredBook(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
+    public StoredBook(String isbn, String title, Set<StoredAuthor> authors) {
+        this.isbn = isbn;
+        this.title = title;
+        this.authors = authors;
     }
 
     public String getName() {
-        return name;
+        return title;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public Set<StoredAuthor> getAuthors() {
+        return authors;
     }
 }
