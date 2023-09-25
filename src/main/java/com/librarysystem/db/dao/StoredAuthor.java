@@ -8,7 +8,7 @@ import java.util.Set;
 public class StoredAuthor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final long id;
+    private final String id;
     private final String name;
     @ManyToMany
     @JoinTable(
@@ -18,13 +18,13 @@ public class StoredAuthor {
     )
     private final Set<StoredBook> books;
 
-    public StoredAuthor(long id, String name, Set<StoredBook> books) {
+    public StoredAuthor(String id, String name, Set<StoredBook> books) {
         this.id = id;
         this.name = name;
         this.books = books;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
