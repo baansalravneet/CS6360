@@ -1,16 +1,16 @@
 package com.librarysystem.models;
 
 public class Author {
-    private final String authorID;
+    private final Long authorId;
     private final String name;
 
-    public Author(String authorID, String name) {
-        this.authorID = authorID;
+    public Author(Long authorId, String name) {
+        this.authorId = authorId;
         this.name = name;
     }
 
-    public String getAuthorID() {
-        return authorID;
+    public Long getAuthorId() {
+        return authorId;
     }
 
     public String getName() {

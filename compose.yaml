@@ -1,11 +1,11 @@
 services:
   mysql:
     image: 'mysql:latest'
-#    command: '--init-file create_tables.sql'
+#    command: '--init-file /app_data/create_tables.sql'
     environment:
       - 'MYSQL_DATABASE=librarydatabase'
       - 'MYSQL_ALLOW_EMPTY_PASSWORD=yes'
     ports:
       - '3306'
     volumes:
-      - './Data:/data'
+      - './:/app_data'

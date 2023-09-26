@@ -10,7 +10,6 @@ public class LibrarySystemApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(LibrarySystemApplication.class)
                 .headless(false)
-                .web(WebApplicationType.NONE)
                 .run(args);
     }
 }

@@ -8,23 +8,23 @@ import java.util.Set;
 public class StoredAuthor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final String id;
+    private final Long id;
     private final String name;
     @ManyToMany
     @JoinTable(
-            name = "authors_books",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "author_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private final Set<StoredBook> books;
 
-    public StoredAuthor(String id, String name, Set<StoredBook> books) {
+    public StoredAuthor(Long id, String name, Set<StoredBook> books) {
         this.id = id;
         this.name = name;
         this.books = books;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -35,4 +35,5 @@ public class StoredAuthor {
     public Set<StoredBook> getBooks() {
         return books;
     }
+
 }
