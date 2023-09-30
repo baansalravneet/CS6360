@@ -3,16 +3,20 @@ package com.librarysystem.db.dao;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Entity(name = "borrowers")
+@Entity
+@Table(name = "BORROWERS")
 public class StoredBorrower {
     @Id
-    private final String cardId;
+    private String cardId;
     @Column(unique = true)
-    private final String ssn;
-    private final String name;
-    private final String address;
-    private final String phone;
+    private String ssn;
+    private String name;
+    private String address;
+    private String phone;
+
+    public StoredBorrower() {}
 
     public StoredBorrower(String cardId, String ssn, String name, String address, String phone) {
         this.cardId = cardId;

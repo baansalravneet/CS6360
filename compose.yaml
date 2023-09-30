@@ -3,7 +3,7 @@ services:
     image: 'mysql:latest'
 #    command: '--init-file /app_data/create_tables.sql'
     environment:
-      - 'MYSQL_DATABASE=librarydatabase'
+      - 'MYSQL_DATABASE=LIBRARY_DATABASE'
       - 'MYSQL_ALLOW_EMPTY_PASSWORD=yes'
     ports:
       - '3306'

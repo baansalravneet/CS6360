@@ -2,27 +2,33 @@ package com.librarysystem.db.dao;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "authors")
+@Entity
+@Table(name="AUTHORS")
 public class StoredAuthor {
     @Id
+    @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
-    private final String name;
-    @ManyToMany
+    private Long id;
+    @Column(name = "Name")
+    private String name;
+    @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
-            name = "book_authors",
-            joinColumns = @JoinColumn(name = "author_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
+            name = "BOOK_AUTHORS",
+            joinColumns = @JoinColumn(name = "Author_id"),
+            inverseJoinColumns = @JoinColumn(name = "Book_id")
     )
-    private final Set<StoredBook> books;
+    private Set<StoredBook> books = new HashSet<>();
 
     public StoredAuthor(Long id, String name, Set<StoredBook> books) {
         this.id = id;
         this.name = name;
-        this.books = books;
+        if (books != null) this.books.addAll(books);
     }
+
+    public StoredAuthor() {}
 
     public Long getId() {
         return id;

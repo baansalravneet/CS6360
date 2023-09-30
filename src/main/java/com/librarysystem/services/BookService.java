@@ -13,6 +13,6 @@ public class BookService {
 
     public Book addBook(final Book book) {
         Optional<Book> savedBook = databaseService.getBookById(book.getIsbn());
-        return savedBook.orElse(databaseService.saveBook(book));
+        return savedBook.orElseGet(() -> databaseService.saveBook(book));
     }
 }

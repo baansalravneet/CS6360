@@ -7,6 +7,7 @@ import com.librarysystem.db.repositories.BookRepository;
 import com.librarysystem.db.repositories.BorrowerRepository;
 import com.librarysystem.models.Author;
 import com.librarysystem.models.Book;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,9 @@ public class DatabaseService {
 
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
     private AuthorRepository authorRepository;
+    @Autowired
     private BorrowerRepository borrowerRepository;
 
     Optional<Book> getBookById(String isbn) {
@@ -36,12 +39,22 @@ public class DatabaseService {
         return storedAuthors.stream().map(DatabaseService::toAuthor).collect(Collectors.toSet());
     }
 
+    @Transactional
     Book saveBook(Book book) {
         StoredBook storedBook = DatabaseService.toStoredBook(book);
-        Set<StoredAuthor> savedAuthors = getOrSaveAuthors(book.getAuthors());
+        Set<StoredAuthor> savedAuthors = getOrCreateAuthors(book.getAuthors());
         storedBook.setAuthors(savedAuthors);
-        savedAuthors.forEach(sa -> sa.getBooks().add(storedBook));
+        savedAuthors.forEach(sa -> {
+            checkAndAddBook(sa, storedBook);
+            authorRepository.save(sa);
+        });
         return DatabaseService.toBook(bookRepository.save(storedBook));
+    }
+
+    private static void checkAndAddBook(StoredAuthor sa, StoredBook sb) {
+        if (sa.getBooks().stream().noneMatch(book -> book.getIsbn().equals(sb.getIsbn()))) {
+            sa.getBooks().add(sb);
+        }
     }
 
     private static StoredBook toStoredBook(Book book) {
@@ -50,12 +63,12 @@ public class DatabaseService {
                 null, book.isAvailable());
     }
 
-    private Set<StoredAuthor> getOrSaveAuthors(Set<Author> authors) {
-        return authors.stream().map(a -> getOrSaveAuthor(a.getName()))
+    private Set<StoredAuthor> getOrCreateAuthors(Set<Author> authors) {
+        return authors.stream().map(a -> getOrCreateAuthor(a.getName()))
                 .collect(Collectors.toSet());
     }
 
-    StoredAuthor getOrSaveAuthor(String name) {
+    private StoredAuthor getOrCreateAuthor(String name) {
         Optional<StoredAuthor> savedAuthor = authorRepository.getAuthorByName(name);
         return savedAuthor.orElseGet(() -> new StoredAuthor(null, name, null));
     }

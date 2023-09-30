@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<StoredAuthor, String> {
-//    @Query("SELECT * FROM authors WHERE name = ?1")
     Optional<StoredAuthor> getAuthorByName(String name);
 }
