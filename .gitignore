@@ -33,3 +33,4 @@ bin/
 
 insert_books.sql
 insert_authors.sql
+insert_book_authors.sql

@@ -8,14 +8,13 @@ import codecs
 books_input = 'books.csv'
 borrowers_input = 'borrowers.csv'
 
-books_file = 'insert_books.sql'
-authors_file = 'insert_authors.sql'
+books_file = codecs.open('insert_books.sql', 'w', 'utf-8')
+authors_file = codecs.open('insert_authors.sql', 'w', 'utf-8')
+book_authors_file = codecs.open('insert_book_authors.sql', 'w', 'utf-8')
 
-insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOKS VALUES %s;'''
-insert_query_books_values = '''('%s', '%s', '%s', '%s', %d, 1)'''
-
-insert_query_authors = '''INSERT IGNORE INTO LIBRARY_DATABASE.AUTHORS (Name) VALUES %s;'''
-insert_query_authors_values = '''('%s')'''
+insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOKS VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
+insert_query_authors = '''REPLACE INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
+insert_query_book_authors = '''REPLACE INTO LIBRARY_DATABASE.BOOK_AUTHORS VALUES ('%s', %d);\n'''
 
 data = []
 with open(books_input, mode='r', newline='\n') as file:
@@ -23,41 +22,70 @@ with open(books_input, mode='r', newline='\n') as file:
     for row in reader:
         data.append(row)
 
-with codecs.open(books_file, 'w', 'utf-8') as file:
-    values = []
-    count = 100
-    for row in data:
-        isbn = row['ISBN13']
-        title = row['Title'].replace("'", "\\'")
-        cover_url = row['Cover'].replace("'", "\\'")
-        publisher = row['Publisher'].replace("'", "\\'")
-        page = int(row['Pages'])
-        row_values = insert_query_books_values % (isbn, title, cover_url, publisher, page)
-        values.append(row_values)
-        count -= 1
-        if count == 0:
-            count = 100
-            query = insert_query_books % ",".join(values)
-            values = []
-            file.write(query + '\n')
-    if len(values) != 0:
-        query = insert_query_books % ",".join(values)
-        file.write(query + '\n')
+def get_books_query(row):
+    return insert_query_books % (row['ISBN13'], row['Title'].replace("'", "\\'"), row['Cover'].replace("'", "\\'"), row['Publisher'].replace("'", "\\'"), int(row['Pages']))
 
-with codecs.open(authors_file, 'w', 'utf-8') as file:
-    values = []
-    count = 100
-    for row in data:
-        authors = row['Authro'].split(",")
-        for a in authors:
-            row_values = insert_query_authors_values % a.replace("'", "\\'")
-            values.append(row_values)
-            count -= 1
-            if count == 0:
-                count = 100
-                query = insert_query_authors % ",".join(values)
-                values = []
-                file.write(query + '\n')
-    if len(values) != 0:
-        query = insert_query_authors % ",".join(values)
-        file.write(query + '\n')
+def get_authors_query(count, name):
+    return insert_query_authors % (count, name)
+
+def get_book_authors_query(book_id, author_id):
+    return insert_query_book_authors % (book_id, author_id)
+
+count = 1
+for row in data:
+    books_file.write(get_books_query(row))
+    authors = row['Authro'].split(",")
+    for a in authors:
+        if a == '' or a == '(None)':
+            continue
+        authors_file.write(get_authors_query(count, a.replace("'", "\\'")))
+        book_authors_file.write(get_book_authors_query(row['ISBN13'], count))
+        count = count + 1
+
+# with codecs.open(books_file, 'w', 'utf-8') as file:
+#     values = []
+#     count = 100
+#     for row in data:
+#         isbn = row['ISBN13']
+#         title = row['Title'].replace("'", "\\'")
+#         cover_url = row['Cover'].replace("'", "\\'")
+#         publisher = row['Publisher'].replace("'", "\\'")
+#         page = int(row['Pages'])
+#         row_values = insert_query_books_values % (isbn, title, cover_url, publisher, page)
+#         values.append(row_values)
+#         count -= 1
+#         if count == 0:
+#             count = 100
+#             query = insert_query_books % ",".join(values)
+#             values = []
+#             file.write(query + '\n')
+#     if len(values) != 0:
+#         query = insert_query_books % ",".join(values)
+#         file.write(query + '\n')
+#
+# with codecs.open(authors_file, 'w', 'utf-8') as file:
+#     values = []
+#     count = 100
+#     for row in data:
+#         authors = row['Authro'].split(",")
+#         for a in authors:
+#             if a == '' or a == '(None)':
+#                 continue
+#             row_values = insert_query_authors_values % a.replace("'", "\\'")
+#             values.append(row_values)
+#             count -= 1
+#             if count == 0:
+#                 count = 100
+#                 query = insert_query_authors % ",".join(values)
+#                 values = []
+#                 file.write(query + '\n')
+#     if len(values) != 0:
+#         query = insert_query_authors % ",".join(values)
+#         file.write(query + '\n')
+#
+# with codecs.open(book_authors_file, 'w', 'utf-8') as file:
+#     for row in data:
+#         authors = row['Authro'].split(",")
+#         author_ids = get_author_ids(authors)
+#         for id in author_ids:
+#             insert_book_authors(id, row['ISBN13'])
