@@ -6,34 +6,57 @@ import javax.swing.*;
 import java.awt.*;
 
 @Component
-public class GUI extends JFrame {
+public class GUI extends JFrame { // JFrame is the main window of the application
 
-    JButton printThisButton = new JButton("Print This");
-    JTextField textInput = new JTextField(20);
+    private final JPanel searchPanel = new JPanel(); // we define a panel to organise components
+
+    private final JButton searchBookButton = new JButton("Search");
+    private final JTextField textInput = new JTextField(25);
+
+    private JFrame searchResultFrame;
+//    private final JFrame searchBookResultFrame = new JFrame();
+    private final JButton searchBookResultFrameExitButton = new JButton("OK");
 
     public GUI() {
-        super("Library System");
-        initGUI();
-        addListeners();
+        super(); // make a new JFrame
+        initialiseGUI(); // initialise with basic settings
+        addComponentsToPane(this.getContentPane()); // add all the buttons and stuff
+        setSize(750, 750);
+        addListeners(); // add all the functions to the buttons
     }
 
-    private void initGUI() {
-        addComponentsToPane(this.getContentPane());
-        this.pack();
+    private void initialiseGUI() {
+        this.setTitle("Library System");
+        this.setLayout(new FlowLayout());
         this.setVisible(true);
     }
 
     private void addComponentsToPane(final Container pane) {
-        final JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.add(textInput);
-        panel.add(printThisButton);
-        pane.add(panel);
+        searchPanel.add(textInput);
+        searchPanel.add(searchBookButton);
+        pane.add(searchPanel);
+        pack();
     }
 
     private void addListeners() {
-        printThisButton.addActionListener(listener -> {
-            JOptionPane.showMessageDialog(null, textInput.getText());
+        searchBookButton.addActionListener(listener -> {
+            showSearchResultsFrame();
         });
+        searchBookResultFrameExitButton.addActionListener(listener -> {
+            closeSearchResultsFrame();
+        });
+    }
+
+    private void closeSearchResultsFrame() {
+        searchResultFrame.dispose();
+    }
+
+    private void showSearchResultsFrame() {
+        searchResultFrame = new JFrame("Search Results");
+        searchResultFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        searchResultFrame.setSize(250, 250);
+        searchResultFrame.setLayout(new FlowLayout());
+        searchResultFrame.add(searchBookResultFrameExitButton);
+        searchResultFrame.setVisible(true);
     }
 }

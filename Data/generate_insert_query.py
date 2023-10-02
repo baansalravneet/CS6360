@@ -14,7 +14,7 @@ book_authors_file = codecs.open('insert_book_authors.sql', 'w', 'utf-8')
 
 insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOKS VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
 insert_query_authors = '''REPLACE INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
-insert_query_book_authors = '''REPLACE INTO LIBRARY_DATABASE.BOOK_AUTHORS VALUES ('%s', %d);\n'''
+insert_query_book_authors = '''INSERT INTO LIBRARY_DATABASE.BOOK_AUTHORS VALUES ('%s', %d);\n'''
 
 data = []
 with open(books_input, mode='r', newline='\n') as file:
@@ -32,15 +32,25 @@ def get_book_authors_query(book_id, author_id):
     return insert_query_book_authors % (book_id, author_id)
 
 count = 1
+author_dict = {}
 for row in data:
     books_file.write(get_books_query(row))
     authors = row['Authro'].split(",")
     for a in authors:
         if a == '' or a == '(None)':
             continue
-        authors_file.write(get_authors_query(count, a.replace("'", "\\'")))
-        book_authors_file.write(get_book_authors_query(row['ISBN13'], count))
+        a = a.replace("'", "\\'")
+        author_dict[a] = count
+        authors_file.write(get_authors_query(count, a))
         count = count + 1
+
+for row in data:
+    authors = row['Authro'].split(",")
+    for a in authors:
+        if a == '' or a == '(None)':
+            continue
+        a = a.replace("'", "\\'")
+        book_authors_file.write(get_book_authors_query(row['ISBN13'], author_dict[a]))
 
 # with codecs.open(books_file, 'w', 'utf-8') as file:
 #     values = []
