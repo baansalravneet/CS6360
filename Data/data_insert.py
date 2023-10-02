@@ -33,9 +33,30 @@ def get_authors(authors):
         request_list_string = request_list_string + ","
     return request_list_string[:-1]
 
+def add_books(request):
+    url = 'http://127.0.0.1:8080/addBooks'
+    request = "[%s]" % request
+    response = requests.post(url, json=json.loads(request))
+    if (response.text != "true"):
+        print(request)
+        return False
+    else:
+        print("Done")
+
+request_list = []
+count = 10
 for row in data:
     authors = get_authors(row['Authro'])
     request = books_request % (row['ISBN13'],row['Title'],row['Cover'],authors)
-    url = 'http://127.0.0.1:8080/addBook'
-    response = requests.post(url, json=json.loads(request))
-    time.sleep(0.5)
+    request_list.append(request)
+    count -= 1
+    if (count == 0):
+        count = 10
+        done = add_books(",".join(request_list))
+        if done == False:
+            break
+        request_list = []
+add_books(",".join(request_list))
+#     url = 'http://127.0.0.1:8080/addBook'
+#     response = requests.post(url, json=json.loads(request))
+#     break

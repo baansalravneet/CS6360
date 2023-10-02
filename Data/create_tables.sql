@@ -7,7 +7,7 @@ CREATE TABLE `AUTHORS` (
   `Name`        VARCHAR(255)    DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `name_key` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `BOOKS` (
   `Isbn`        VARCHAR(255)    NOT NULL,
@@ -15,9 +15,9 @@ CREATE TABLE `BOOKS` (
   `Cover_url`   VARCHAR(255)    DEFAULT NULL,
   `Publisher`   VARCHAR(255)    DEFAULT NULL,
   `Pages`       INT             DEFAULT 0,
-  `Available`   TINYINT(1)      DEFAULT 1,
+  `Available`   TINYINT         DEFAULT 1,
   PRIMARY KEY (`Isbn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `BOOK_AUTHORS` (
   `Book_id`     VARCHAR(255)    NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE `BOOK_AUTHORS` (
   KEY `author_id_key` (`Author_id`),
   CONSTRAINT `author_foreign_key` FOREIGN KEY (`Author_id`) REFERENCES `AUTHORS` (`Id`),
   CONSTRAINT `book_foreign_key` FOREIGN KEY (`Book_id`) REFERENCES `BOOKS` (`Isbn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `BORROWERS` (
   `Card_id`     VARCHAR(255)    NOT NULL,
@@ -36,4 +36,4 @@ CREATE TABLE `BORROWERS` (
   `Ssn`         VARCHAR(255)    DEFAULT NULL,
   PRIMARY KEY (`card_id`),
   UNIQUE KEY `ssn_key` (`ssn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
