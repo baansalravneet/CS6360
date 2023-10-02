@@ -19,7 +19,7 @@ public class StoredBook {
     private String publisher;
     @Column(name = "Pages")
     private int pages;
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private Set<StoredAuthor> authors = new HashSet<>();
     @Column(name = "Available")
     private boolean available;

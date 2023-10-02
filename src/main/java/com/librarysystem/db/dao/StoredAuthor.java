@@ -14,7 +14,7 @@ public class StoredAuthor {
     private Long id;
     @Column(name = "Name")
     private String name;
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "BOOK_AUTHORS",
             joinColumns = @JoinColumn(name = "Author_id"),

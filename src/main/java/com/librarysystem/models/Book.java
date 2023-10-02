@@ -52,4 +52,14 @@ public class Book {
     public int getPages() {
         return pages;
     }
+
+    public String[] displayString() {
+        return new String[] { getIsbn(), getTitle(), isAvailable() ? "Yes" : "No" };
+    }
+
+    @Override
+    public boolean equals(Object book) {
+        if (book.getClass() != Book.class) return false;
+        return this.getIsbn().equals(((Book)book).getIsbn());
+    }
 }

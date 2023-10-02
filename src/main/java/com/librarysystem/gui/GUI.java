@@ -1,12 +1,19 @@
 package com.librarysystem.gui;
 
+import com.librarysystem.models.Book;
+import com.librarysystem.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 @Component
 public class GUI extends JFrame { // JFrame is the main window of the application
+
+    @Autowired
+    private BookService bookService;
 
     private final JPanel searchPanel = new JPanel(); // we define a panel to organise components
 
@@ -14,8 +21,10 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private final JTextField textInput = new JTextField(25);
 
     private JFrame searchResultFrame;
-//    private final JFrame searchBookResultFrame = new JFrame();
+
     private final JButton searchBookResultFrameExitButton = new JButton("OK");
+
+    private final String[] searchResultsColumnNames = { "ISBN", "Title", "Available" };
 
     public GUI() {
         super(); // make a new JFrame
@@ -40,7 +49,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
 
     private void addListeners() {
         searchBookButton.addActionListener(listener -> {
-            showSearchResultsFrame();
+            showSearchResultsFrame(textInput.getText());
         });
         searchBookResultFrameExitButton.addActionListener(listener -> {
             closeSearchResultsFrame();
@@ -51,12 +60,29 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         searchResultFrame.dispose();
     }
 
-    private void showSearchResultsFrame() {
+    private void showSearchResultsFrame(String searchQuery) {
         searchResultFrame = new JFrame("Search Results");
         searchResultFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         searchResultFrame.setSize(250, 250);
         searchResultFrame.setLayout(new FlowLayout());
+
+        JScrollPane searchResultPane = new JScrollPane(addSearchResults(searchQuery));
+        searchResultFrame.add(searchResultPane);
         searchResultFrame.add(searchBookResultFrameExitButton);
+        searchResultFrame.pack();
         searchResultFrame.setVisible(true);
+    }
+
+    private JTable addSearchResults(String searchQuery) {
+        List<Book> searchResults = bookService.getBooksForSearchQuery(searchQuery);
+
+        String[][] tableData = new String[searchResults.size()][3];
+        for (int i = 0; i < searchResults.size(); i++) {
+            tableData[i] = searchResults.get(i).displayString();
+        }
+
+        JTable jTable = new JTable(tableData, searchResultsColumnNames);
+        jTable.setEnabled(false);
+        return jTable;
     }
 }
