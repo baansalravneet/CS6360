@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -74,7 +75,11 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     }
 
     private JTable addSearchResults(String searchQuery) {
-        List<Book> searchResults = bookService.getBooksForSearchQuery(searchQuery);
+        List<Book> searchResults = new ArrayList<>();
+        for (String s : searchQuery.split(" ")) {
+            searchResults.addAll(bookService.getBooksForSearchQuery(s.trim()));
+        }
+        searchResults = searchResults.stream().distinct().toList();
 
         String[][] tableData = new String[searchResults.size()][3];
         for (int i = 0; i < searchResults.size(); i++) {

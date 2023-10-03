@@ -82,4 +82,10 @@ public class DatabaseService {
         List<StoredBook> matchingBooks = bookRepository.getBooksMatchingId(searchQuery.toLowerCase());
         return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
     }
+
+    public List<Book> getBooksByTitle(String searchQuery) {
+        List<StoredBook> matchingBooks = bookRepository.getBooksMatchingTitle(searchQuery.toLowerCase());
+        return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
+    }
+
 }

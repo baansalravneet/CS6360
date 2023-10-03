@@ -12,4 +12,7 @@ import java.util.List;
 public interface BookRepository extends JpaRepository<StoredBook, String> {
     @Query(value = "SELECT * FROM BOOKS WHERE LOWER(Isbn) LIKE %:bookId% LIMIT 100", nativeQuery = true)
     List<StoredBook> getBooksMatchingId(@Param("bookId") String bookId);
+
+    @Query(value = "SELECT * FROM BOOKS WHERE LOWER(Title) LIKE %:title% LIMIT 100", nativeQuery = true)
+    List<StoredBook> getBooksMatchingTitle(@Param("title") String title);
 }

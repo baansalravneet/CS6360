@@ -27,8 +27,7 @@ public class BookService {
 
     public List<Book> getBooksForSearchQuery(String searchQuery) {
         List<Book> result = new ArrayList<>();
-//        result.add(databaseService.getBooksByTitle(searchQuery));
-//        result.add(databaseService.getBooksByPublisher(searchQuery));
+        result.addAll(databaseService.getBooksByTitle(searchQuery));
 //        result.add(databaseService.getBooksByAuthors(searchQuery));
         result.addAll(databaseService.getBookByIsbn(searchQuery));
         return result.stream().distinct().collect(Collectors.toList());
