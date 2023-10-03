@@ -74,10 +74,11 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         searchResultFrame.setVisible(true);
     }
 
+    // TODO: add feature to search the intersection. Eg, all books named "GOOD BOOK" by "JOHN"
     private JTable addSearchResults(String searchQuery) {
         List<Book> searchResults = new ArrayList<>();
         for (String s : searchQuery.split(" ")) {
-            searchResults.addAll(bookService.getBooksForSearchQuery(s.trim()));
+            searchResults.addAll(bookService.getBooksForSearchQuery(s.trim().toLowerCase()));
         }
         searchResults = searchResults.stream().distinct().toList();
 

@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -79,13 +80,18 @@ public class DatabaseService {
     }
 
     public List<Book> getBookByIsbn(String searchQuery) {
-        List<StoredBook> matchingBooks = bookRepository.getBooksMatchingId(searchQuery.toLowerCase());
+        List<StoredBook> matchingBooks = bookRepository.getBooksMatchingId(searchQuery);
         return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
     }
 
     public List<Book> getBooksByTitle(String searchQuery) {
-        List<StoredBook> matchingBooks = bookRepository.getBooksMatchingTitle(searchQuery.toLowerCase());
+        List<StoredBook> matchingBooks = bookRepository.getBooksMatchingTitle(searchQuery);
         return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
     }
 
+    public List<Book> getBooksByAuthors(String searchQuery) {
+        List<StoredAuthor> matchingAuthors = authorRepository.getAuthorsMatchingName(searchQuery);
+        return matchingAuthors.stream().map(StoredAuthor::getBooks).flatMap(Collection::stream)
+                .map(DatabaseService::toBook).collect(Collectors.toList());
+    }
 }
