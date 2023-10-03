@@ -39,7 +39,7 @@ for row in data:
     for a in authors:
         if a == '' or a == '(None)':
             continue
-        a = a.replace("'", "\\'")
+        a = a.replace("'", "\\'").strip()
         author_dict[a] = count
         authors_file.write(get_authors_query(count, a))
         count = count + 1
@@ -49,7 +49,7 @@ for row in data:
     for a in authors:
         if a == '' or a == '(None)':
             continue
-        a = a.replace("'", "\\'")
+        a = a.replace("'", "\\'").strip()
         book_authors_file.write(get_book_authors_query(row['ISBN13'], author_dict[a]))
 
 # with codecs.open(books_file, 'w', 'utf-8') as file:

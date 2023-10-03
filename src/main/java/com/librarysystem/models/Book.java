@@ -1,6 +1,7 @@
 package com.librarysystem.models;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Book {
     private final String isbn;
@@ -54,12 +55,16 @@ public class Book {
     }
 
     public String[] displayString() {
-        return new String[] { getIsbn(), getTitle(), isAvailable() ? "Yes" : "No" };
+        return new String[] { getIsbn(), getTitle(), getAuthorsString(), isAvailable() ? "Yes" : "No" };
     }
 
     @Override
     public boolean equals(Object book) {
         if (book.getClass() != Book.class) return false;
         return this.getIsbn().equals(((Book)book).getIsbn());
+    }
+
+    private String getAuthorsString() {
+        return getAuthors().stream().map(Author::getName).collect(Collectors.joining(","));
     }
 }

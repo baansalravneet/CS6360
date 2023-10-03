@@ -25,7 +25,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
 
     private final JButton searchBookResultFrameExitButton = new JButton("OK");
 
-    private final String[] searchResultsColumnNames = { "ISBN", "Title", "Available" };
+    private final String[] searchResultsColumnNames = { "ISBN", "Title", "Authors", "Available" };
 
     public GUI() {
         super(); // make a new JFrame
@@ -64,10 +64,10 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private void showSearchResultsFrame(String searchQuery) {
         searchResultFrame = new JFrame("Search Results");
         searchResultFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        searchResultFrame.setSize(250, 250);
         searchResultFrame.setLayout(new FlowLayout());
 
-        JScrollPane searchResultPane = new JScrollPane(addSearchResults(searchQuery));
+        JScrollPane searchResultPane = new JScrollPane();
+        searchResultPane.setViewportView(addSearchResults(searchQuery));
         searchResultFrame.add(searchResultPane);
         searchResultFrame.add(searchBookResultFrameExitButton);
         searchResultFrame.pack();
@@ -75,6 +75,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     }
 
     // TODO: add feature to search the intersection. Eg, all books named "GOOD BOOK" by "JOHN"
+    // TODO: fix table size
     private JTable addSearchResults(String searchQuery) {
         List<Book> searchResults = new ArrayList<>();
         for (String s : searchQuery.split(" ")) {
@@ -82,13 +83,14 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         }
         searchResults = searchResults.stream().distinct().toList();
 
-        String[][] tableData = new String[searchResults.size()][3];
+        String[][] tableData = new String[searchResults.size()][4];
         for (int i = 0; i < searchResults.size(); i++) {
             tableData[i] = searchResults.get(i).displayString();
         }
 
         JTable jTable = new JTable(tableData, searchResultsColumnNames);
         jTable.setEnabled(false);
+        jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         return jTable;
     }
 }
