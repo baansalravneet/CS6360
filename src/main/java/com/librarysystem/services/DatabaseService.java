@@ -84,6 +84,10 @@ public class DatabaseService {
         return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
     }
 
+    public Optional<Book> getBookByExactIsbn(String isbn) {
+        return bookRepository.getBookByIsbn(isbn).map(DatabaseService::toBook);
+    }
+
     public List<Book> getBooksByTitle(String searchQuery) {
         List<StoredBook> matchingBooks = bookRepository.getBooksMatchingTitle(searchQuery);
         return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
@@ -94,4 +98,5 @@ public class DatabaseService {
         return matchingAuthors.stream().map(StoredAuthor::getBooks).flatMap(Collection::stream)
                 .map(DatabaseService::toBook).collect(Collectors.toList());
     }
+
 }

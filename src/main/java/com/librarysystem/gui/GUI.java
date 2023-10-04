@@ -24,9 +24,14 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private BookService bookService;
 
     private final JPanel searchPanel = new JPanel(); // we define a panel to organise components
+    private final JPanel checkoutPanel = new JPanel();
 
+    private final JTextField searchTextInput = new PromptTextField("Search Prompt");
     private final JButton searchBookButton = new JButton("Search");
-    private final JTextField textInput = new JTextField(25);
+
+    private final JTextField checkoutTextInput = new PromptTextField("Book ISBN");
+    private final JTextField checkoutBorrowerTextInput = new PromptTextField("Borrower ID");
+    private final JButton checkoutBookButton = new JButton("Checkout");
 
     private JFrame searchResultFrame;
     private JTable searchResultTable;
@@ -38,7 +43,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     public GUI() {
         super(); // make a new JFrame
         initialiseGUI(); // initialise with basic settings
-        addComponentsToPane(this.getContentPane()); // add all the buttons and stuff
+        addComponentsToFrame(); // add all the buttons and stuff
         setSize(750, 750);
         addListeners(); // add all the functions to the buttons
     }
@@ -47,21 +52,35 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         this.setTitle("Library System");
         this.setLayout(new FlowLayout());
         this.setVisible(true);
+
+        searchPanel.setLayout(new FlowLayout());
+        checkoutPanel.setLayout(new FlowLayout());
     }
 
-    private void addComponentsToPane(final Container pane) {
-        searchPanel.add(textInput);
+    private void addComponentsToFrame() {
+        searchPanel.add(searchTextInput);
         searchPanel.add(searchBookButton);
-        pane.add(searchPanel);
+        checkoutPanel.add(checkoutTextInput);
+        checkoutPanel.add(checkoutBorrowerTextInput);
+        checkoutPanel.add(checkoutBookButton);
+        this.add(searchPanel);
+        this.add(checkoutPanel);
         pack();
     }
 
     private void addListeners() {
         searchBookButton.addActionListener(listener -> {
-            showSearchResultsFrame(textInput.getText());
+            showSearchResultsFrame(searchTextInput.getText());
         });
         searchBookResultFrameExitButton.addActionListener(listener -> {
             closeSearchResultsFrame();
+        });
+        checkoutBookButton.addActionListener(listener -> {
+            String isbn = checkoutTextInput.getText();
+            String borrowerId = checkoutBorrowerTextInput.getText();
+            boolean checkedOut = bookService.checkout(List.of(isbn), borrowerId);
+            if (checkedOut) showSuccessFrame();
+            else showErrorFrame();
         });
     }
 
@@ -84,10 +103,11 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
             List<String> selectedISBN = Arrays.stream(searchResultTable.getSelectedRows())
                     .filter(row -> searchResultTable.getValueAt(row, 3).equals("Yes"))
                     .mapToObj(row -> (String)searchResultTable.getValueAt(row, 0)).toList();
-            for (String s : selectedISBN) {
-                System.out.println(s);
-            }
+            String borrowerId = checkoutBorrowerTextInput.getText();
+            boolean checkedOut = bookService.checkout(selectedISBN, borrowerId);
+            if (!checkedOut) showErrorFrame();
         });
+        searchResultFrame.add(checkoutBorrowerTextInput);
         searchResultFrame.add(checkoutButton);
         searchResultFrame.pack();
         searchResultFrame.setVisible(true);
@@ -152,12 +172,36 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
 
     private void showBookInfoFrame(Book book) {
         JFrame bookInfoFrame = new JFrame("Book Info");
-        bookInfoFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        bookInfoFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         bookInfoFrame.setLayout(new FlowLayout());
 
         bookInfoFrame.add(new TextArea(book.getBookInfoString()));
 
         bookInfoFrame.pack();
         bookInfoFrame.setVisible(true);
+    }
+
+    private void showErrorFrame() {
+        JFrame errorFrame = new JFrame("Error!");
+        errorFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(listener -> {
+            errorFrame.dispose();
+        });
+        errorFrame.add(okButton);
+        errorFrame.setSize(200, 200);
+        errorFrame.setVisible(true);
+    }
+
+    private void showSuccessFrame() {
+        JFrame successFrame = new JFrame("Success!");
+        successFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(listener -> {
+            successFrame.dispose();
+        });
+        successFrame.add(okButton);
+        successFrame.setSize(200, 200);
+        successFrame.setVisible(true);
     }
 }
