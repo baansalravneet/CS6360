@@ -25,6 +25,7 @@ public class BookService {
         return true;
     }
 
+    // TODO: Put these in a single query.
     public List<Book> getBooksForSearchQuery(String searchQuery) {
         List<Book> result = new ArrayList<>();
         result.addAll(databaseService.getBooksByTitle(searchQuery));

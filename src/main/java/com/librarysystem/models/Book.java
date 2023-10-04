@@ -55,7 +55,12 @@ public class Book {
     }
 
     public String[] displayString() {
-        return new String[] { getIsbn(), getTitle(), getAuthorsString(), isAvailable() ? "Yes" : "No" };
+        return new String[] { isbn, title, getAuthorsString(), available ? "Yes" : "No" };
+    }
+
+    public String getBookInfoString() {
+        return String.format("ISBN: %s\nTitle: %s\nAuthors: %s\nPublisher: %s\nPages: %d\nAvailable: %s",
+                isbn, title, getAuthorsString(), publisher, pages, available ? "Yes" : "No");
     }
 
     @Override
