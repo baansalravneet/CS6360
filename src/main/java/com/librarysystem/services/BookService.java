@@ -34,6 +34,7 @@ public class BookService {
         return result.stream().distinct().collect(Collectors.toList());
     }
 
+    // TODO: batch update?
     public boolean checkout(List<String> selectedISBN, String borrowerId) {
         List<Book> books = selectedISBN.stream()
                 .map(isbn -> databaseService.getBookByExactIsbn(isbn))
@@ -44,6 +45,10 @@ public class BookService {
         if (books.size() != selectedISBN.size()) {
             return false;
         }
+        books.forEach(b -> {
+            b.setAvailable(false);
+            databaseService.saveBook(b);
+        });
         return true;
     }
 }

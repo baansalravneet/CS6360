@@ -35,9 +35,28 @@ CREATE TABLE `BORROWERS` (
   `Lname`       VARCHAR(255)    DEFAULT NULL,
   `Email`       VARCHAR(255)    DEFAULT NULL,
   `Address`     VARCHAR(255)    DEFAULT NULL,
-  `State`       VARCHAR(255)    DEFAULT NULL,
   `City`        VARCHAR(255)    DEFAULT NULL,
+  `State`       VARCHAR(255)    DEFAULT NULL,
   `Phone`       VARCHAR(255)    DEFAULT NULL,
-  PRIMARY KEY (`card_id`),
-  UNIQUE KEY `ssn_key` (`ssn`)
+  PRIMARY KEY (`Card_id`),
+  UNIQUE KEY `ssn_key` (`Ssn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `LOANS` (
+  `Id`          bigint          NOT NULL    AUTO_INCREMENT,
+  `Isbn`        varchar(255)    NOT NULL,
+  `Card_id`     varchar(255)    NOT NULL,
+  `Date_out`    TIMESTAMP       NOT NULL,
+  `Due_data`    TIMESTAMP       NOT NULL,
+  `Date_in`     TIMESTAMP,
+  PRIMARY KEY (`Id`),
+  CONSTRAINT `borrower_foreign_key` FOREIGN KEY (`Card_id`) REFERENCES `BORROWERS` (`Card_id`),
+  CONSTRAINT `book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOKS` (`Isbn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `FINES` (
+  `Loan_id`     bigint          NOT NULL,
+  `Fine_amt`    DECIMAL(10,2)   NOT NULL,
+  `Paid`        TINYINT         DEFAULT 0,
+  CONSTRAINT `loan_foreign_key` FOREIGN KEY (`Loan_id`) REFERENCES `LOANS` (`Loan_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

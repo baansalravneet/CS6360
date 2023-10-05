@@ -11,16 +11,24 @@ borrowers_input = 'borrowers.csv'
 books_file = codecs.open('insert_books.sql', 'w', 'utf-8')
 authors_file = codecs.open('insert_authors.sql', 'w', 'utf-8')
 book_authors_file = codecs.open('insert_book_authors.sql', 'w', 'utf-8')
+borrowers_file = codecs.open('insert_borrowers.sql', 'w', 'utf-8')
 
 insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOKS VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
 insert_query_authors = '''REPLACE INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
 insert_query_book_authors = '''INSERT INTO LIBRARY_DATABASE.BOOK_AUTHORS VALUES ('%s', %d);\n'''
+insert_query_borrowers = '''INSERT INTO LIBRARY_DATABASE.BORROWERS VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n'''
 
 data = []
 with open(books_input, mode='r', newline='\n') as file:
     reader = csv.DictReader(file, delimiter='\t')
     for row in reader:
         data.append(row)
+
+borrowers_data = []
+with open(borrowers_input, mode='r', newline='\n') as file:
+    reader = csv.DictReader(file, delimiter=',')
+    for row in reader:
+        borrowers_data.append(row)
 
 def get_books_query(row):
     return insert_query_books % (row['ISBN13'], row['Title'].replace("'", "\\'"), row['Cover'].replace("'", "\\'"), row['Publisher'].replace("'", "\\'"), int(row['Pages']))
@@ -51,6 +59,22 @@ for row in data:
             continue
         a = a.replace("'", "\\'").strip()
         book_authors_file.write(get_book_authors_query(row['ISBN13'], author_dict[a]))
+
+def get_borrowers_query(row):
+    card_id = row['ID0000id']
+    ssn = row['ssn']
+    first_name = row['first_name']
+    last_name = row['last_name']
+    email = row['email']
+    address = row['address']
+    city = row['city']
+    state = row['state']
+    phone = row['phone']
+    return insert_query_borrowers % (card_id, ssn, first_name, last_name, email, address, city, state, phone)
+
+for row in borrowers_data:
+    borrowers_file.write(get_borrowers_query(row))
+
 
 # with codecs.open(books_file, 'w', 'utf-8') as file:
 #     values = []

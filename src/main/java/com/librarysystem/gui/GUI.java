@@ -101,11 +101,11 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         JButton checkoutButton = new JButton("Checkout");
         checkoutButton.addActionListener(listener -> {
             List<String> selectedISBN = Arrays.stream(searchResultTable.getSelectedRows())
-                    .filter(row -> searchResultTable.getValueAt(row, 3).equals("Yes"))
                     .mapToObj(row -> (String)searchResultTable.getValueAt(row, 0)).toList();
             String borrowerId = checkoutBorrowerTextInput.getText();
             boolean checkedOut = bookService.checkout(selectedISBN, borrowerId);
             if (!checkedOut) showErrorFrame();
+            else showSuccessFrame();
         });
         searchResultFrame.add(checkoutBorrowerTextInput);
         searchResultFrame.add(checkoutButton);
