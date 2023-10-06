@@ -15,7 +15,7 @@ CREATE TABLE `BOOKS` (
   `Cover_url`   VARCHAR(255)    DEFAULT NULL,
   `Publisher`   VARCHAR(255)    DEFAULT NULL,
   `Pages`       INT             DEFAULT 0,
-  `Available`   TINYINT         DEFAULT 1,
+  `Available`   BIT             DEFAULT 1,
   PRIMARY KEY (`Isbn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -47,16 +47,16 @@ CREATE TABLE `LOANS` (
   `Isbn`        varchar(255)    NOT NULL,
   `Card_id`     varchar(255)    NOT NULL,
   `Date_out`    TIMESTAMP       NOT NULL,
-  `Due_data`    TIMESTAMP       NOT NULL,
+  `Due_date`    TIMESTAMP       NOT NULL,
   `Date_in`     TIMESTAMP,
   PRIMARY KEY (`Id`),
   CONSTRAINT `borrower_foreign_key` FOREIGN KEY (`Card_id`) REFERENCES `BORROWERS` (`Card_id`),
-  CONSTRAINT `book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOKS` (`Isbn`)
+  CONSTRAINT `loan_book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOKS` (`Isbn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `FINES` (
   `Loan_id`     bigint          NOT NULL,
   `Fine_amt`    DECIMAL(10,2)   NOT NULL,
-  `Paid`        TINYINT         DEFAULT 0,
-  CONSTRAINT `loan_foreign_key` FOREIGN KEY (`Loan_id`) REFERENCES `LOANS` (`Loan_id`)
+  `Paid`        BIT             DEFAULT 0,
+  CONSTRAINT `loan_foreign_key` FOREIGN KEY (`Loan_id`) REFERENCES `LOANS` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

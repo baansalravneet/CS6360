@@ -1,5 +1,6 @@
 package com.librarysystem.models;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,10 +10,10 @@ public class Book {
     private final String coverUrl;
     private final String publisher;
     private final int pages;
-    private final Set<Author> authors;
+    private final List<Author> authors;
     private boolean available;
 
-    public Book(String isbn, String title, String coverUrl, String publisher, int pages, Set<Author> authors, boolean available) {
+    public Book(String isbn, String title, String coverUrl, String publisher, int pages, List<Author> authors, boolean available) {
         this.isbn = isbn;
         this.title = title;
         this.coverUrl = coverUrl;
@@ -30,7 +31,7 @@ public class Book {
         return title;
     }
 
-    public Set<Author> getAuthors() {
+    public List<Author> getAuthors() {
         return authors;
     }
 

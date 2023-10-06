@@ -2,7 +2,9 @@ package com.librarysystem.db.dao;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,13 +16,13 @@ public class StoredAuthor {
     private Long id;
     @Column(name = "Name")
     private String name;
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "BOOK_AUTHORS",
             joinColumns = @JoinColumn(name = "Author_id"),
             inverseJoinColumns = @JoinColumn(name = "Book_id")
     )
-    private Set<StoredBook> books = new HashSet<>();
+    private List<StoredBook> books = new ArrayList<>();
 
     public StoredAuthor(Long id, String name, Set<StoredBook> books) {
         this.id = id;
@@ -38,7 +40,7 @@ public class StoredAuthor {
         return name;
     }
 
-    public Set<StoredBook> getBooks() {
+    public List<StoredBook> getBooks() {
         return books;
     }
 

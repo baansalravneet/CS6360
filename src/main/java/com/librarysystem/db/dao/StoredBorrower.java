@@ -1,9 +1,8 @@
 package com.librarysystem.db.dao;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "BORROWERS")
@@ -27,8 +26,11 @@ public class StoredBorrower {
     private String city;
     @Column(name = "Phone")
     private String phone;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "borrower")
+    private List<StoredLoan> loans;
 
-    public StoredBorrower() {}
+    public StoredBorrower() {
+    }
 
     public StoredBorrower(String cardId, String ssn, String firstName, String lastName, String email, String address, String state, String city, String phone) {
         this.cardId = cardId;

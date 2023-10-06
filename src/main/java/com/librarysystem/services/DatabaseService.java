@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,14 +36,14 @@ public class DatabaseService {
                 DatabaseService.toAuthors(sb.getAuthors()), sb.isAvailable());
     }
 
-    private static Set<Author> toAuthors(Set<StoredAuthor> storedAuthors) {
-        return storedAuthors.stream().map(DatabaseService::toAuthor).collect(Collectors.toSet());
+    private static List<Author> toAuthors(List<StoredAuthor> storedAuthors) {
+        return storedAuthors.stream().map(DatabaseService::toAuthor).collect(Collectors.toList());
     }
 
     @Transactional
     Book saveBook(Book book) {
         StoredBook storedBook = DatabaseService.toStoredBook(book);
-        Set<StoredAuthor> savedAuthors = getOrCreateAuthors(book.getAuthors());
+        List<StoredAuthor> savedAuthors = getOrCreateAuthors(book.getAuthors());
         storedBook.setAuthors(savedAuthors);
         savedAuthors.forEach(sa -> {
             checkAndAddBook(sa, storedBook);
@@ -62,12 +61,12 @@ public class DatabaseService {
     private static StoredBook toStoredBook(Book book) {
         return new StoredBook(book.getIsbn(), book.getTitle(),
                 book.getCoverUrl(), book.getPublisher(), book.getPages(),
-                null, book.isAvailable());
+                null, null, book.isAvailable());
     }
 
-    private Set<StoredAuthor> getOrCreateAuthors(Set<Author> authors) {
+    private List<StoredAuthor> getOrCreateAuthors(List<Author> authors) {
         return authors.stream().map(a -> getOrCreateAuthor(a.getName()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     private StoredAuthor getOrCreateAuthor(String name) {
