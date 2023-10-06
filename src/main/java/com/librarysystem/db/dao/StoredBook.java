@@ -26,7 +26,8 @@ public class StoredBook {
     @Column(name = "Available")
     private boolean available;
 
-    public StoredBook(String isbn, String title, String coverUrl, String publisher, int pages, List<StoredAuthor> authors, List<StoredLoan> loans, boolean available) {
+    public StoredBook(String isbn, String title, String coverUrl, String publisher, int pages,
+                      List<StoredAuthor> authors, List<StoredLoan> loans, boolean available) {
         this.isbn = isbn;
         this.title = title;
         this.coverUrl = coverUrl;
@@ -70,5 +71,9 @@ public class StoredBook {
 
     public void setAuthors(List<StoredAuthor> authors) {
         this.authors = authors;
+    }
+
+    public List<StoredLoan> getLoans() {
+        return loans;
     }
 }

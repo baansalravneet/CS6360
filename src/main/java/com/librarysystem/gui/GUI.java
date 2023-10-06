@@ -1,7 +1,7 @@
 package com.librarysystem.gui;
 
 import com.librarysystem.models.Book;
-import com.librarysystem.services.BookService;
+import com.librarysystem.services.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// TODO: Add feature to checkout using ISBN
-
 @Component
 public class GUI extends JFrame { // JFrame is the main window of the application
 
     @Autowired
-    private BookService bookService;
+    private DatabaseService databaseService;
 
     private final JPanel searchPanel = new JPanel(); // we define a panel to organise components
     private final JPanel checkoutPanel = new JPanel();
@@ -78,7 +76,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         checkoutBookButton.addActionListener(listener -> {
             String isbn = checkoutTextInput.getText();
             String borrowerId = checkoutBorrowerTextInput.getText();
-            boolean checkedOut = bookService.checkout(List.of(isbn), borrowerId);
+            boolean checkedOut = databaseService.checkout(List.of(isbn), borrowerId);
             if (checkedOut) showSuccessFrame();
             else showErrorFrame();
         });
@@ -101,9 +99,9 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         JButton checkoutButton = new JButton("Checkout");
         checkoutButton.addActionListener(listener -> {
             List<String> selectedISBN = Arrays.stream(searchResultTable.getSelectedRows())
-                    .mapToObj(row -> (String)searchResultTable.getValueAt(row, 0)).toList();
+                    .mapToObj(row -> (String) searchResultTable.getValueAt(row, 0)).toList();
             String borrowerId = checkoutBorrowerTextInput.getText();
-            boolean checkedOut = bookService.checkout(selectedISBN, borrowerId);
+            boolean checkedOut = databaseService.checkout(selectedISBN, borrowerId);
             if (!checkedOut) showErrorFrame();
             else showSuccessFrame();
         });
@@ -118,7 +116,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private void addSearchResults(String searchQuery) {
         final List<Book> searchResults = new ArrayList<>();
         for (String s : searchQuery.split(" ")) {
-            searchResults.addAll(bookService.getBooksForSearchQuery(s.trim().toLowerCase()).stream().distinct().toList());
+            searchResults.addAll(databaseService.getBooksForSearchQuery(s.trim().toLowerCase()).stream().distinct().toList());
         }
 
         String[][] tableData = new String[searchResults.size()][4];
@@ -158,7 +156,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         searchResultTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         searchResultTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-                JTable table = (JTable)mouseEvent.getSource();
+                JTable table = (JTable) mouseEvent.getSource();
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {

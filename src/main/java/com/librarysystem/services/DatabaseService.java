@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +32,10 @@ public class DatabaseService {
         return savedBook.map(DatabaseService::toBook);
     }
 
+    // TODO: populate this with borrowers
     static Book toBook(StoredBook sb) {
         return new Book(sb.getIsbn(), sb.getTitle(), sb.getCoverUrl(), sb.getPublisher(), sb.getPages(),
-                DatabaseService.toAuthors(sb.getAuthors()), sb.isAvailable());
+                toAuthors(sb.getAuthors()), sb.isAvailable(), null);
     }
 
     private static List<Author> toAuthors(List<StoredAuthor> storedAuthors) {
@@ -96,6 +98,43 @@ public class DatabaseService {
         List<StoredAuthor> matchingAuthors = authorRepository.getAuthorsMatchingName(searchQuery);
         return matchingAuthors.stream().map(StoredAuthor::getBooks).flatMap(Collection::stream)
                 .map(DatabaseService::toBook).collect(Collectors.toList());
+    }
+
+    public Book addBook(final Book book) {
+        Optional<Book> savedBook = getBookById(book.getIsbn());
+        return savedBook.orElseGet(() -> saveBook(book));
+    }
+
+    public boolean addBooks(final List<Book> books) {
+        books.forEach(this::addBook);
+        return true;
+    }
+
+    // TODO: Put these in a single query.
+    public List<Book> getBooksForSearchQuery(String searchQuery) {
+        List<Book> result = new ArrayList<>();
+        result.addAll(getBooksByTitle(searchQuery));
+        result.addAll(getBooksByAuthors(searchQuery));
+        result.addAll(getBookByIsbn(searchQuery));
+        return result.stream().distinct().collect(Collectors.toList());
+    }
+
+    // TODO: batch update?
+    public boolean checkout(List<String> selectedISBN, String borrowerId) {
+        List<Book> books = selectedISBN.stream()
+                .map(this::getBookByExactIsbn)
+                .filter(Optional::isPresent)
+                .filter(b -> b.get().isAvailable())
+                .map(Optional::get)
+                .toList();
+        if (books.size() != selectedISBN.size()) {
+            return false;
+        }
+        books.forEach(b -> {
+            b.setAvailable(false);
+            saveBook(b);
+        });
+        return true;
     }
 
 }

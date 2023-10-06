@@ -1,7 +1,6 @@
 package com.librarysystem.models;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Book {
@@ -12,8 +11,9 @@ public class Book {
     private final int pages;
     private final List<Author> authors;
     private boolean available;
+    private final List<Borrower> borrowers;
 
-    public Book(String isbn, String title, String coverUrl, String publisher, int pages, List<Author> authors, boolean available) {
+    public Book(String isbn, String title, String coverUrl, String publisher, int pages, List<Author> authors, boolean available, List<Borrower> borrowers) {
         this.isbn = isbn;
         this.title = title;
         this.coverUrl = coverUrl;
@@ -21,6 +21,7 @@ public class Book {
         this.pages = pages;
         this.authors = authors;
         this.available = available;
+        this.borrowers = borrowers;
     }
 
     public String getIsbn() {
@@ -72,5 +73,9 @@ public class Book {
 
     private String getAuthorsString() {
         return getAuthors().stream().map(Author::getName).collect(Collectors.joining(","));
+    }
+
+    public List<Borrower> getBorrowers() {
+        return borrowers;
     }
 }

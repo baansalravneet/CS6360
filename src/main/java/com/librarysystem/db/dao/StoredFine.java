@@ -2,7 +2,7 @@ package com.librarysystem.db.dao;
 
 import jakarta.persistence.*;
 
-@Entity
+@Embeddable
 @Table(name = "FINES")
 public class StoredFine {
     @OneToOne

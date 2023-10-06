@@ -1,7 +1,7 @@
 package com.librarysystem.resources;
 
 import com.librarysystem.models.Book;
-import com.librarysystem.services.BookService;
+import com.librarysystem.services.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,15 +13,15 @@ import java.util.List;
 public class BookResource {
 
     @Autowired
-    private BookService bookService;
+    private DatabaseService databaseService;
 
     @PostMapping("/addBook")
     public Book addBook(@RequestBody Book book) {
-        return bookService.addBook(book);
+        return databaseService.addBook(book);
     }
 
     @PostMapping("/addBooks")
     public boolean addBooks(@RequestBody List<Book> books) throws InterruptedException {
-        return bookService.addBooks(books);
+        return databaseService.addBooks(books);
     }
 }
