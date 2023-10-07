@@ -2,6 +2,8 @@ package com.librarysystem.services;
 
 import com.librarysystem.db.dao.StoredAuthor;
 import com.librarysystem.db.dao.StoredBook;
+import com.librarysystem.db.dao.StoredBorrower;
+import com.librarysystem.db.dao.StoredLoan;
 import com.librarysystem.db.repositories.AuthorRepository;
 import com.librarysystem.db.repositories.BookRepository;
 import com.librarysystem.db.repositories.BorrowerRepository;
@@ -11,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class DatabaseService {
+
+    private static final long DAY_IN_MILLIS = 8_64_00_000L;
 
     @Autowired
     private BookRepository bookRepository;
@@ -54,6 +59,11 @@ public class DatabaseService {
         return DatabaseService.toBook(bookRepository.save(storedBook));
     }
 
+    @Transactional
+    Book saveBook(StoredBook sb) {
+        return DatabaseService.toBook(bookRepository.save(sb));
+    }
+
     private static void checkAndAddBook(StoredAuthor sa, StoredBook sb) {
         if (sa.getBooks().stream().noneMatch(book -> book.getIsbn().equals(sb.getIsbn()))) {
             sa.getBooks().add(sb);
@@ -85,8 +95,8 @@ public class DatabaseService {
         return matchingBooks.stream().map(DatabaseService::toBook).collect(Collectors.toList());
     }
 
-    public Optional<Book> getBookByExactIsbn(String isbn) {
-        return bookRepository.getBookByIsbn(isbn).map(DatabaseService::toBook);
+    public Optional<StoredBook> getBookByExactIsbn(String isbn) {
+        return bookRepository.getBookByIsbn(isbn);
     }
 
     public List<Book> getBooksByTitle(String searchQuery) {
@@ -120,21 +130,42 @@ public class DatabaseService {
     }
 
     // TODO: batch update?
+    // TODO: return proper errors to show on the GUI
+    // TODO: Try to move these checks at the DB level
     public boolean checkout(List<String> selectedISBN, String borrowerId) {
-        List<Book> books = selectedISBN.stream()
+        // check if borrower exist
+        Optional<StoredBorrower> storedBorrower = borrowerRepository.findById(borrowerId);
+        if (storedBorrower.isEmpty()) return false;
+        List<StoredBook> books = selectedISBN.stream()
                 .map(this::getBookByExactIsbn)
                 .filter(Optional::isPresent)
                 .filter(b -> b.get().isAvailable())
                 .map(Optional::get)
                 .toList();
+        // check if the borrower can borrow the number of books requested
+        if (storedBorrower.get().getLoans()
+                .stream().filter(sl -> sl.getDateIn() == null).count() + books.size() > 3) return false;
+        // check if all the books requested are available or not
         if (books.size() != selectedISBN.size()) {
             return false;
         }
-        books.forEach(b -> {
-            b.setAvailable(false);
-            saveBook(b);
-        });
+        // handle checkout
+        handleCheckout(books, storedBorrower.get());
         return true;
+    }
+
+    // TODO: find a way to set the system time.
+    private void handleCheckout(List<StoredBook> books, StoredBorrower borrower) {
+        Timestamp dateOut = new Timestamp(System.currentTimeMillis());
+        Timestamp dueDate = new Timestamp(dateOut.getTime() + 14 * DAY_IN_MILLIS);
+        books.stream()
+                .forEach(b -> {
+                    StoredLoan newLoan = new StoredLoan(null, b, borrower, dateOut, dueDate, null);
+                    b.setAvailable(false);
+                    b.getLoans().add(new StoredLoan(null, b, borrower, dateOut, dueDate, null));
+                    borrower.getLoans().add(newLoan);
+                    saveBook(b);
+                });
     }
 
 }

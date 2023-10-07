@@ -97,15 +97,16 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         searchResultFrame.add(searchResultPane);
         searchResultFrame.add(searchBookResultFrameExitButton);
         JButton checkoutButton = new JButton("Checkout");
+        JTextField checkoutBorrowerSearchTextInput = new PromptTextField("Borrower ID");
         checkoutButton.addActionListener(listener -> {
             List<String> selectedISBN = Arrays.stream(searchResultTable.getSelectedRows())
                     .mapToObj(row -> (String) searchResultTable.getValueAt(row, 0)).toList();
-            String borrowerId = checkoutBorrowerTextInput.getText();
+            String borrowerId = checkoutBorrowerSearchTextInput.getText();
             boolean checkedOut = databaseService.checkout(selectedISBN, borrowerId);
             if (!checkedOut) showErrorFrame();
             else showSuccessFrame();
         });
-        searchResultFrame.add(checkoutBorrowerTextInput);
+        searchResultFrame.add(checkoutBorrowerSearchTextInput);
         searchResultFrame.add(checkoutButton);
         searchResultFrame.pack();
         searchResultFrame.setVisible(true);

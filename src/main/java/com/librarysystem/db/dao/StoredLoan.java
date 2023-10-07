@@ -9,7 +9,8 @@ import java.sql.Timestamp;
 public class StoredLoan {
     @Id
     @Column(name = "Id")
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @ManyToOne(fetch = FetchType.EAGER,
             cascade = CascadeType.ALL,
             optional = false)
@@ -29,7 +30,7 @@ public class StoredLoan {
 
     public StoredLoan() {}
 
-    public StoredLoan(long id, StoredBook book, StoredBorrower borrower, Timestamp dateOut, Timestamp dueDate, Timestamp dateIn) {
+    public StoredLoan(Long id, StoredBook book, StoredBorrower borrower, Timestamp dateOut, Timestamp dueDate, Timestamp dateIn) {
         this.id = id;
         this.book = book;
         this.borrower = borrower;
@@ -38,7 +39,7 @@ public class StoredLoan {
         this.dateIn = dateIn;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

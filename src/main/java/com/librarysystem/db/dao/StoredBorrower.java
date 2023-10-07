@@ -79,4 +79,8 @@ public class StoredBorrower {
     public String getLastName() {
         return lastName;
     }
+
+    public List<StoredLoan> getLoans() {
+        return loans;
+    }
 }

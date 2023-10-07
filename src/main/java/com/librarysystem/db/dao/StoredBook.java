@@ -19,9 +19,9 @@ public class StoredBook {
     private String publisher;
     @Column(name = "Pages")
     private int pages;
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<StoredAuthor> authors = new ArrayList<>();
-    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<StoredLoan> loans;
     @Column(name = "Available")
     private boolean available;
@@ -75,5 +75,9 @@ public class StoredBook {
 
     public List<StoredLoan> getLoans() {
         return loans;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 }
