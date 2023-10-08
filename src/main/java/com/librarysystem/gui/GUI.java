@@ -23,6 +23,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
 
     private final JPanel searchPanel = new JPanel(); // we define a panel to organise components
     private final JPanel checkoutPanel = new JPanel();
+    private final JPanel checkinPanel = new JPanel();
 
     private final JTextField searchTextInput = new PromptTextField("Search Prompt");
     private final JButton searchBookButton = new JButton("Search");
@@ -31,10 +32,17 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private final JTextField checkoutBorrowerTextInput = new PromptTextField("Borrower ID");
     private final JButton checkoutBookButton = new JButton("Checkout");
 
+    private final JTextField checkinTextInput = new PromptTextField("Checkin Search");
+    private final JButton checkinBookSearchButton = new JButton("Search");
+
     private JFrame searchResultFrame;
     private JTable searchResultTable;
 
+    private JFrame checkinSearchResultFrame;
+    private JTable checkinSearchResultTable;
+
     private final JButton searchBookResultFrameExitButton = new JButton("OK");
+    private final JButton checkinBookResultFrameExitButton = new JButton("OK");
 
     private final String[] searchResultsColumnNames = {"ISBN", "Title", "Authors", "Available"};
 
@@ -53,16 +61,23 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
 
         searchPanel.setLayout(new FlowLayout());
         checkoutPanel.setLayout(new FlowLayout());
+        checkinPanel.setLayout(new FlowLayout());
     }
 
     private void addComponentsToFrame() {
         searchPanel.add(searchTextInput);
         searchPanel.add(searchBookButton);
+
         checkoutPanel.add(checkoutTextInput);
         checkoutPanel.add(checkoutBorrowerTextInput);
         checkoutPanel.add(checkoutBookButton);
+
+        checkinPanel.add(checkinTextInput);
+        checkinPanel.add(checkinBookSearchButton);
+
         this.add(searchPanel);
         this.add(checkoutPanel);
+        this.add(checkinPanel);
         pack();
     }
 
@@ -71,7 +86,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
             showSearchResultsFrame(searchTextInput.getText());
         });
         searchBookResultFrameExitButton.addActionListener(listener -> {
-            closeSearchResultsFrame();
+            searchResultFrame.dispose();
         });
         checkoutBookButton.addActionListener(listener -> {
             String isbn = checkoutTextInput.getText();
@@ -80,10 +95,32 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
             if (checkedOut) showSuccessFrame();
             else showErrorFrame();
         });
+        checkinBookSearchButton.addActionListener(listener -> {
+            showCheckinSearchResultsFrame(checkinTextInput.getText());
+        });
     }
 
-    private void closeSearchResultsFrame() {
-        searchResultFrame.dispose();
+    private void showCheckinSearchResultsFrame(String searchQuery) {
+        checkinSearchResultFrame = new JFrame("Search Results");
+        checkinSearchResultFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        checkinSearchResultFrame.setLayout(new FlowLayout());
+
+        JScrollPane searchResultPane = new JScrollPane();
+        addCheckinSearchResults(searchQuery);
+        searchResultPane.setViewportView(checkinSearchResultTable);
+        searchResultPane.add(checkinBookResultFrameExitButton);
+        JButton checkinButton = new JButton("Checkin");
+        checkinButton.addActionListener(listener -> {
+
+        });
+        checkinSearchResultFrame.add(checkinButton);
+        checkinSearchResultFrame.pack();
+        checkinSearchResultFrame.setVisible(true);
+    }
+
+    // TODO: Implement this
+    private void addCheckinSearchResults(String searchQuery) {
+
     }
 
     private void showSearchResultsFrame(String searchQuery) {
