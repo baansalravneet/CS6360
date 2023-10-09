@@ -7,6 +7,7 @@ import com.librarysystem.db.dao.StoredLoan;
 import com.librarysystem.db.repositories.AuthorRepository;
 import com.librarysystem.db.repositories.BookRepository;
 import com.librarysystem.db.repositories.BorrowerRepository;
+import com.librarysystem.db.repositories.LoanRepository;
 import com.librarysystem.models.Author;
 import com.librarysystem.models.Book;
 import jakarta.transaction.Transactional;
@@ -14,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +29,8 @@ public class DatabaseService {
     private AuthorRepository authorRepository;
     @Autowired
     private BorrowerRepository borrowerRepository;
+    @Autowired
+    private LoanRepository loanRepository;
 
     Optional<Book> getBookById(String isbn) {
         Optional<StoredBook> savedBook = bookRepository.findById(isbn);
@@ -168,4 +168,27 @@ public class DatabaseService {
                 });
     }
 
+    public List<StoredLoan> getBookLoansForSearchQuery(String searchQuery) {
+        List<StoredLoan> result = new ArrayList<>();
+        result.addAll(getLoansByMatchingIsbn(searchQuery));
+        result.addAll(getLoansByBorrowerId(searchQuery));
+        result.addAll(getLoansByBorrowerName(searchQuery));
+        return result;
+    }
+
+    private List<StoredLoan> getLoansByBorrowerName(String searchQuery) {
+        return borrowerRepository.getLoanByMatchingBorrowerName(searchQuery)
+                .stream()
+                .map(StoredBorrower::getLoans)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private List<StoredLoan> getLoansByBorrowerId(String searchQuery) {
+        return loanRepository.getLoanByMatchingBorrowerId(searchQuery);
+    }
+
+    private List<StoredLoan> getLoansByMatchingIsbn(String searchQuery) {
+        return loanRepository.getLoanByMatchingIsbn(searchQuery);
+    }
 }

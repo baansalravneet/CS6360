@@ -1,5 +1,6 @@
 package com.librarysystem.gui;
 
+import com.librarysystem.db.dao.StoredLoan;
 import com.librarysystem.models.Book;
 import com.librarysystem.services.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// TODO: Try to make all of the variable local.
 @Component
 public class GUI extends JFrame { // JFrame is the main window of the application
 
@@ -45,6 +47,7 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private final JButton checkinBookResultFrameExitButton = new JButton("OK");
 
     private final String[] searchResultsColumnNames = {"ISBN", "Title", "Authors", "Available"};
+    private final String[] checkinResultColumnNames = {"ISBN", "Title", "Borrower ID", "Name", "Checkout Date", "Due Date" };
 
     public GUI() {
         super(); // make a new JFrame
@@ -88,6 +91,9 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         searchBookResultFrameExitButton.addActionListener(listener -> {
             searchResultFrame.dispose();
         });
+        checkinBookResultFrameExitButton.addActionListener(listener -> {
+            checkinSearchResultFrame.dispose();
+        });
         checkoutBookButton.addActionListener(listener -> {
             String isbn = checkoutTextInput.getText();
             String borrowerId = checkoutBorrowerTextInput.getText();
@@ -101,26 +107,81 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     }
 
     private void showCheckinSearchResultsFrame(String searchQuery) {
-        checkinSearchResultFrame = new JFrame("Search Results");
+        checkinSearchResultFrame = new JFrame("Checkin Search Results");
         checkinSearchResultFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         checkinSearchResultFrame.setLayout(new FlowLayout());
 
         JScrollPane searchResultPane = new JScrollPane();
         addCheckinSearchResults(searchQuery);
         searchResultPane.setViewportView(checkinSearchResultTable);
-        searchResultPane.add(checkinBookResultFrameExitButton);
         JButton checkinButton = new JButton("Checkin");
         checkinButton.addActionListener(listener -> {
-
+            // TODO: implement this
         });
+        checkinSearchResultFrame.add(searchResultPane);
+        checkinSearchResultFrame.add(checkinBookResultFrameExitButton);
         checkinSearchResultFrame.add(checkinButton);
         checkinSearchResultFrame.pack();
         checkinSearchResultFrame.setVisible(true);
     }
 
-    // TODO: Implement this
     private void addCheckinSearchResults(String searchQuery) {
+        final List<StoredLoan> searchResults = new ArrayList<>();
+        for (String s : searchQuery.split(" ")) {
+            if (s.isEmpty()) continue;
+            searchResults.addAll(
+                    databaseService.getBookLoansForSearchQuery(s.trim().toLowerCase())
+                            .stream().distinct().toList()
+            );
+        }
 
+        String[][] tableData = new String[searchResults.size()][6];
+        for (int i = 0; i < searchResults.size(); i++) {
+            tableData[i] = searchResults.get(i).displayString();
+        }
+
+        checkinSearchResultTable = new JTable(tableData, searchResultsColumnNames);
+        TableModel jTableModel = new AbstractTableModel() { // this is define only to make the cells uneditable.
+            @Override
+            public int getRowCount() {
+                return tableData.length;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return checkinResultColumnNames.length;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return tableData[rowIndex][columnIndex];
+            }
+
+            @Override
+            public String getColumnName(int columnIndex) {
+                return checkinResultColumnNames[columnIndex];
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) { // this is redundant
+                return false;
+            }
+        };
+        checkinSearchResultTable.setModel(jTableModel);
+        checkinSearchResultTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        checkinSearchResultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        checkinSearchResultTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table = (JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    String isbn = tableData[row][0];
+                    StoredLoan loan = searchResults.stream().filter(b -> b.getBook().getIsbn().equals(isbn)).findFirst().get();
+                    showLoanInfoFrame(loan);
+                }
+            }
+        });
     }
 
     private void showSearchResultsFrame(String searchQuery) {
@@ -154,7 +215,11 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private void addSearchResults(String searchQuery) {
         final List<Book> searchResults = new ArrayList<>();
         for (String s : searchQuery.split(" ")) {
-            searchResults.addAll(databaseService.getBooksForSearchQuery(s.trim().toLowerCase()).stream().distinct().toList());
+            if (s.isEmpty()) continue;
+            searchResults.addAll(
+                    databaseService.getBooksForSearchQuery(s.trim().toLowerCase())
+                            .stream().distinct().toList()
+            );
         }
 
         String[][] tableData = new String[searchResults.size()][4];
@@ -204,6 +269,17 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
                 }
             }
         });
+    }
+
+    private void showLoanInfoFrame(StoredLoan loan) {
+        JFrame loanInfoFrame = new JFrame("Loan Info");
+        loanInfoFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        loanInfoFrame.setLayout(new FlowLayout());
+
+        loanInfoFrame.add(new TextArea(loan.getLoanInfoString()));
+
+        loanInfoFrame.pack();
+        loanInfoFrame.setVisible(true);
     }
 
     private void showBookInfoFrame(Book book) {

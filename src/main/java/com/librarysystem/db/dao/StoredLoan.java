@@ -62,4 +62,40 @@ public class StoredLoan {
     public Timestamp getDateIn() {
         return dateIn;
     }
+
+    @Override
+    public boolean equals(Object loan) {
+        if (loan.getClass() != StoredLoan.class) return false;
+        return this.id.longValue() == ((StoredLoan)loan).getId().longValue();
+    }
+
+    public String[] displayString() {
+        return new String[] {
+                book.getIsbn(),
+                book.getTitle(),
+                borrower.getCardId(),
+                borrower.getFirstName() + " " + borrower.getLastName(),
+                dateOut.toString(),
+                dueDate.toString()
+        };
+    }
+
+    public String getLoanInfoString() {
+        return String.format
+            (
+                "ISBN: %s\n" +
+                "Title: %s\n" +
+                "Borrower ID: %s\n" +
+                "Borrower Name: %s\n" +
+                "Checkout Date: %s\n" +
+                "Due Date: %s",
+
+                book.getIsbn(),
+                book.getTitle(),
+                borrower.getCardId(),
+                borrower.getFirstName() + " " + borrower.getLastName(),
+                dateOut.toString(),
+                dueDate.toString()
+            );
+    }
 }
