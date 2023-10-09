@@ -76,7 +76,8 @@ public class StoredLoan {
                 borrower.getCardId(),
                 borrower.getFirstName() + " " + borrower.getLastName(),
                 dateOut.toString(),
-                dueDate.toString()
+                dueDate.toString(),
+                dateIn == null ? "" : dateIn.toString()
         };
     }
 
@@ -88,14 +89,20 @@ public class StoredLoan {
                 "Borrower ID: %s\n" +
                 "Borrower Name: %s\n" +
                 "Checkout Date: %s\n" +
-                "Due Date: %s",
+                "Due Date: %s\n" +
+                "Checkin Date: %s",
 
                 book.getIsbn(),
                 book.getTitle(),
                 borrower.getCardId(),
                 borrower.getFirstName() + " " + borrower.getLastName(),
                 dateOut.toString(),
-                dueDate.toString()
+                dueDate.toString(),
+                dateIn == null ? "" : dateIn.toString()
             );
+    }
+
+    public void setDateIn(Timestamp dateIn) {
+        this.dateIn = dateIn;
     }
 }

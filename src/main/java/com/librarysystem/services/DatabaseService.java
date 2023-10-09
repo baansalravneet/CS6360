@@ -191,4 +191,17 @@ public class DatabaseService {
     private List<StoredLoan> getLoansByMatchingIsbn(String searchQuery) {
         return loanRepository.getLoanByMatchingIsbn(searchQuery);
     }
+
+    public boolean checkin(String isbn, String borrowerId) {
+        List<StoredLoan> loans = loanRepository.getLoanByMatchingIsbn(isbn);
+        Optional<StoredLoan> loan = loans.stream()
+                .filter(l -> l.getBook().getIsbn().equals(isbn))
+                .filter(l -> l.getDateIn() == null)
+                .filter(l -> l.getBorrower().getCardId().equals(borrowerId))
+                .findFirst();
+        if (loan.isEmpty()) return false;
+        loan.get().setDateIn(new Timestamp(System.currentTimeMillis()));
+        loanRepository.save(loan.get());
+        return true;
+    }
 }

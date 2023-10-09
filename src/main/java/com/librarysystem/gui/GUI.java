@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 // TODO: Try to make all of the variable local.
 @Component
@@ -47,17 +48,17 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
     private final JButton checkinBookResultFrameExitButton = new JButton("OK");
 
     private final String[] searchResultsColumnNames = {"ISBN", "Title", "Authors", "Available"};
-    private final String[] checkinResultColumnNames = {"ISBN", "Title", "Borrower ID", "Name", "Checkout Date", "Due Date" };
+    private final String[] checkinResultColumnNames = {"ISBN", "Title", "Borrower ID", "Name", "Checkout Date", "Due Date", "Checkin Date" };
 
     public GUI() {
         super(); // make a new JFrame
-        initialiseGUI(); // initialise with basic settings
+        configure(); // initialise with basic settings
         addComponentsToFrame(); // add all the buttons and stuff
         setSize(750, 750);
         addListeners(); // add all the functions to the buttons
     }
 
-    private void initialiseGUI() {
+    private void configure() {
         this.setTitle("Library System");
         this.setLayout(new FlowLayout());
         this.setVisible(true);
@@ -116,7 +117,13 @@ public class GUI extends JFrame { // JFrame is the main window of the applicatio
         searchResultPane.setViewportView(checkinSearchResultTable);
         JButton checkinButton = new JButton("Checkin");
         checkinButton.addActionListener(listener -> {
-            // TODO: implement this
+            int[] selectedRow = checkinSearchResultTable.getSelectedRows();
+            if (selectedRow.length == 0) return;
+            String isbn = (String)checkinSearchResultTable.getValueAt(selectedRow[0], 0);
+            String borrowerId = (String)checkinSearchResultTable.getValueAt(selectedRow[0], 2);
+            boolean checkin = databaseService.checkin(isbn, borrowerId);
+            if (!checkin) showErrorFrame();
+            else showSuccessFrame();
         });
         checkinSearchResultFrame.add(searchResultPane);
         checkinSearchResultFrame.add(checkinBookResultFrameExitButton);
