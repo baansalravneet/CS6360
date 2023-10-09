@@ -1,4 +1,4 @@
-package com.librarysystem.gui;
+package com.librarysystem.gui.customcomponents;
 
 import javax.swing.*;
 import java.awt.event.FocusEvent;

@@ -31,13 +31,13 @@ CREATE TABLE `BOOK_AUTHORS` (
 CREATE TABLE `BORROWERS` (
   `Card_id`     VARCHAR(255)    NOT NULL,
   `Ssn`         VARCHAR(255)    NOT NULL,
-  `Fname`       VARCHAR(255)    DEFAULT NULL,
-  `Lname`       VARCHAR(255)    DEFAULT NULL,
-  `Email`       VARCHAR(255)    DEFAULT NULL,
-  `Address`     VARCHAR(255)    DEFAULT NULL,
-  `City`        VARCHAR(255)    DEFAULT NULL,
-  `State`       VARCHAR(255)    DEFAULT NULL,
-  `Phone`       VARCHAR(255)    DEFAULT NULL,
+  `Fname`       VARCHAR(255)    NOT NULL,
+  `Lname`       VARCHAR(255)    NOT NULL,
+  `Email`       VARCHAR(255)    NOT NULL,
+  `Address`     VARCHAR(255)    NOT NULL,
+  `City`        VARCHAR(255)    NOT NULL,
+  `State`       VARCHAR(255)    NOT NULL,
+  `Phone`       VARCHAR(255)    NOT NULL,
   PRIMARY KEY (`Card_id`),
   UNIQUE KEY `ssn_key` (`Ssn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
