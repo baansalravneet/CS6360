@@ -19,9 +19,9 @@ public class StoredBook {
     private String publisher;
     @Column(name = "Pages")
     private int pages;
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<StoredAuthor> authors = new ArrayList<>();
-    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<StoredLoan> loans;
     @Column(name = "Available")
     private boolean available;

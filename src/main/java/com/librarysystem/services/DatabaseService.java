@@ -133,6 +133,7 @@ public class DatabaseService {
     // TODO: return proper errors to show on the GUI
     // TODO: Try to move these checks at the DB level
     public boolean checkout(List<String> selectedISBN, String borrowerId) {
+        if (selectedISBN.isEmpty()) return false;
         // check if borrower exist
         Optional<StoredBorrower> storedBorrower = borrowerRepository.findById(borrowerId);
         if (storedBorrower.isEmpty()) return false;
@@ -155,17 +156,17 @@ public class DatabaseService {
     }
 
     // TODO: find a way to set the system time.
+    @Transactional
     private void handleCheckout(List<StoredBook> books, StoredBorrower borrower) {
         Timestamp dateOut = new Timestamp(System.currentTimeMillis());
         Timestamp dueDate = new Timestamp(dateOut.getTime() + 14 * DAY_IN_MILLIS);
-        books.stream()
-                .forEach(b -> {
-                    StoredLoan newLoan = new StoredLoan(null, b, borrower, dateOut, dueDate, null);
-                    b.setAvailable(false);
-                    b.getLoans().add(new StoredLoan(null, b, borrower, dateOut, dueDate, null));
-                    borrower.getLoans().add(newLoan);
-                    saveBook(b);
-                });
+        books.forEach(b -> {
+            StoredLoan newLoan = new StoredLoan(null, b, borrower, dateOut, dueDate, null);
+            b.setAvailable(false);
+            b.getLoans().add(new StoredLoan(null, b, borrower, dateOut, dueDate, null));
+            borrower.getLoans().add(newLoan);
+            saveBook(b);
+        });
     }
 
     public List<StoredLoan> getBookLoansForSearchQuery(String searchQuery) {
@@ -192,12 +193,14 @@ public class DatabaseService {
         return loanRepository.getLoanByMatchingIsbn(searchQuery);
     }
 
+    @Transactional
     public boolean checkin(String isbn, String borrowerId) {
         List<StoredLoan> loans = loanRepository.getLoanByMatchingIsbn(isbn);
         Optional<StoredLoan> loan = loans.stream()
                 .filter(l -> l.getBook().getIsbn().equals(isbn))
                 .filter(l -> l.getDateIn() == null)
                 .filter(l -> l.getBorrower().getCardId().equals(borrowerId))
+                .peek(l -> l.getBook().setAvailable(true))
                 .findFirst();
         if (loan.isEmpty()) return false;
         loan.get().setDateIn(new Timestamp(System.currentTimeMillis()));
@@ -205,8 +208,9 @@ public class DatabaseService {
         return true;
     }
 
+    @Transactional
     public boolean registerBorrower(String ssn, String firstName, String lastName, String email, String address,
-                                 String city, String state, String phone) {
+                                    String city, String state, String phone) {
         // TODO: figure out a way to generate card id.
         // TODO: return the card id that is generated.
         StoredBorrower sb = new StoredBorrower(UUID.randomUUID().toString(), ssn, firstName,

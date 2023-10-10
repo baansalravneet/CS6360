@@ -36,7 +36,7 @@ public class BookSearchWindow extends JFrame {
         content.setLayout(null);
 
         JTable table = addTable(seachQuery, content);
-        addCheckoutComponents(content, table);
+        addCheckoutComponents(table, content);
 
         this.setVisible(true);
     }
@@ -110,7 +110,7 @@ public class BookSearchWindow extends JFrame {
         });
     }
 
-    private void addCheckoutComponents(Container content, JTable table) {
+    private void addCheckoutComponents(JTable table, Container content) {
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(600, 665, 100, 20);
         exitButton.addActionListener(listener -> {

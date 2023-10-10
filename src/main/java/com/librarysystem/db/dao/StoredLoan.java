@@ -12,12 +12,12 @@ public class StoredLoan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.MERGE,
             optional = false)
     @JoinColumn(name = "Isbn")
     private StoredBook book;
     @ManyToOne(fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.MERGE,
             optional = false)
     @JoinColumn(name = "Card_id")
     private StoredBorrower borrower;

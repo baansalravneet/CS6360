@@ -19,44 +19,40 @@ public class CheckinSearchWindow extends JFrame {
     private DatabaseService databaseService;
 
     public CheckinSearchWindow(String searchQuery, DatabaseService databaseService) {
-        super("Checkin Search Results");
         this.databaseService = databaseService;
-        configure();
         initialiseWithData(searchQuery);
     }
 
-    private void configure() {
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(null);
-        this.setLayout(new FlowLayout());
-    }
-
     private void initialiseWithData(String searchQuery) {
-        JScrollPane searchResultPane = new JScrollPane();
-        JTable checkinSearchResultTable = addCheckinSearchResults(searchQuery);
-        searchResultPane.setViewportView(checkinSearchResultTable);
-        JButton checkinButton = new JButton("Checkin");
-        checkinButton.addActionListener(listener -> {
-            int[] selectedRow = checkinSearchResultTable.getSelectedRows();
-            if (selectedRow.length == 0) return;
-            String isbn = (String) checkinSearchResultTable.getValueAt(selectedRow[0], 0);
-            String borrowerId = (String) checkinSearchResultTable.getValueAt(selectedRow[0], 2);
-            boolean checkin = databaseService.checkin(isbn, borrowerId);
-            if (!checkin) MainWindow.showErrorFrame();
-            else MainWindow.showSuccessFrame();
-        });
-        JButton checkinBookResultFrameExitButton = new JButton("OK");
-        checkinBookResultFrameExitButton.addActionListener(listener -> {
-            this.dispose();
-        });
-        this.add(searchResultPane);
-        this.add(checkinBookResultFrameExitButton);
-        this.add(checkinButton);
-        this.pack();
+        this.setTitle("Checkin Search Results");
+        this.setSize(750, 750);
+        this.setResizable(false);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        MainWindow.centerFrameOnScreen(this);
+
+        Container content = this.getContentPane();
+        content.setLayout(null);
+
+        JTable table = addTable(searchQuery, content);
+        addCheckinComponents(table, content);
+
         this.setVisible(true);
+
     }
 
-    private JTable addCheckinSearchResults(String searchQuery) {
+    private JTable addTable(String searchQuery, Container content) {
+        JTable searchResultTable = new JTable();
+
+        populateTable(searchResultTable, searchQuery);
+
+        JScrollPane searchResultPane = new JScrollPane();
+        searchResultPane.setBounds(30, 30, 690, 600);
+        searchResultPane.setViewportView(searchResultTable);
+        content.add(searchResultPane);
+        return searchResultTable;
+    }
+
+    private void populateTable(JTable table, String searchQuery) {
         final List<StoredLoan> searchResults = new ArrayList<>();
         for (String s : searchQuery.split(" ")) {
             if (s.isEmpty()) continue;
@@ -71,7 +67,6 @@ public class CheckinSearchWindow extends JFrame {
             tableData[i] = searchResults.get(i).displayString();
         }
 
-        JTable checkinSearchResultTable = new JTable(tableData, checkinResultColumnNames);
         TableModel jTableModel = new AbstractTableModel() { // this is define only to make the cells uneditable.
             @Override
             public int getRowCount() {
@@ -98,10 +93,9 @@ public class CheckinSearchWindow extends JFrame {
                 return false;
             }
         };
-        checkinSearchResultTable.setModel(jTableModel);
-        checkinSearchResultTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        checkinSearchResultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        checkinSearchResultTable.addMouseListener(new MouseAdapter() {
+        table.setModel(jTableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table = (JTable) mouseEvent.getSource();
                 Point point = mouseEvent.getPoint();
@@ -114,7 +108,31 @@ public class CheckinSearchWindow extends JFrame {
                 }
             }
         });
-        return checkinSearchResultTable;
+    }
+
+    private void addCheckinComponents(JTable table, Container content) {
+        JButton exitButton = new JButton("Exit");
+        exitButton.setBounds(600, 665, 100, 20);
+        exitButton.addActionListener(listener -> {
+            this.dispose();
+        });
+        content.add(exitButton);
+
+        JButton checkinButton = new JButton("Checkin");
+        checkinButton.setBounds(30, 665, 100, 20);
+        checkinButton.addActionListener(listener -> {
+            int[] selectedRow = table.getSelectedRows();
+            if (selectedRow.length == 0) {
+                MainWindow.showErrorFrame();
+                return;
+            }
+            String isbn = (String) table.getValueAt(selectedRow[0], 0);
+            String borrowerId = (String) table.getValueAt(selectedRow[0], 2);
+            boolean checkin = databaseService.checkin(isbn, borrowerId);
+            if (!checkin) MainWindow.showErrorFrame();
+            else MainWindow.showSuccessFrame();
+        });
+        content.add(checkinButton);
     }
 
     private void showLoanInfoFrame(StoredLoan loan) {
@@ -125,6 +143,7 @@ public class CheckinSearchWindow extends JFrame {
         loanInfoFrame.add(new TextArea(loan.getLoanInfoString()));
 
         loanInfoFrame.pack();
+        MainWindow.centerFrameOnScreen(loanInfoFrame);
         loanInfoFrame.setVisible(true);
     }
 
