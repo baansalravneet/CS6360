@@ -98,7 +98,7 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
     }
 
     private void showAddBorrowerForm() {
-        new AddBorrowerForm();
+        new AddBorrowerForm(databaseService);
     }
 
     // TODO: This needs to change to show more verbose errors.

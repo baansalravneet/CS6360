@@ -204,4 +204,18 @@ public class DatabaseService {
         loanRepository.save(loan.get());
         return true;
     }
+
+    public boolean registerBorrower(String ssn, String firstName, String lastName, String email, String address,
+                                 String city, String state, String phone) {
+        // TODO: figure out a way to generate card id.
+        // TODO: return the card id that is generated.
+        StoredBorrower sb = new StoredBorrower(UUID.randomUUID().toString(), ssn, firstName,
+                lastName, email, address, state, city, phone);
+        try {
+            borrowerRepository.save(sb);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
