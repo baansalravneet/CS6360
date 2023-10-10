@@ -1,6 +1,5 @@
 package com.librarysystem.gui;
 
-import com.librarysystem.gui.customcomponents.PromptTextField;
 import com.librarysystem.services.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-// TODO: Try to make all of the variable local.
 @Component
 public class MainWindow extends JFrame { // JFrame is the main window of the application
 
@@ -17,44 +15,69 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
     private DatabaseService databaseService;
 
     public MainWindow() {
-        super("Library System"); // make a new JFrame
-        configure(); // initialise with basic settings
-        setSize(411, 239);
+        configure();
     }
 
     private void configure() {
-        this.setLayout(new FlowLayout(FlowLayout.LEFT));
-        this.setLocation(600, 400);
+        this.setTitle("Library System");
+        this.setSize(500, 500);
         this.setResizable(false);
+        centerFrameOnScreen(this);
+
+        Container content = this.getContentPane();
+        content.setLayout(null);
+
+        addSearchComponents(content);
+        addCheckoutComponents(content);
+        addCheckinComponents(content);
+        addBorrowerComponents(content);
+
         this.setVisible(true);
+    }
 
-        JPanel searchPanel = new JPanel();
-        JPanel checkoutPanel = new JPanel();
-        JPanel checkoutFormPanel = new JPanel();
-        JPanel checkinPanel = new JPanel();
-        JPanel addBorrowerFormButtonPanel = new JPanel();
+    private void addSearchComponents(Container content) {
+        JLabel searchLabel = new JLabel("Search Books");
+        searchLabel.setBounds(0, 30, 500, 20);
+        searchLabel.setHorizontalAlignment(JLabel.CENTER);
+        content.add(searchLabel);
 
-        searchPanel.setLayout(new FlowLayout());
-        checkoutFormPanel.setLayout(new BoxLayout(checkoutFormPanel, BoxLayout.Y_AXIS));
-        checkoutPanel.setLayout(new FlowLayout());
-        checkinPanel.setLayout(new FlowLayout());
-        addBorrowerFormButtonPanel.setLayout(new FlowLayout());
+        JTextField searchTextInput = new JTextField();
+        searchTextInput.setBounds(150, 60, 200, 20);
+        searchTextInput.setHorizontalAlignment(JTextField.CENTER);
+        content.add(searchTextInput);
 
-        JTextField searchTextInput = new PromptTextField("Search Prompt");
         JButton searchBookButton = new JButton("Book Search");
-
-        JTextField checkoutTextInput = new PromptTextField("Book ISBN");
-        JTextField checkoutBorrowerTextInput = new PromptTextField("Borrower ID");
-        JButton checkoutBookButton = new JButton("Checkout");
-
-        JTextField checkinTextInput = new PromptTextField("Checkin Search Prompt");
-        JButton checkinBookSearchButton = new JButton("Checkin Search");
-
-        JButton addBorrowerFormButton = new JButton("Show Add Borrower Form");
-
+        searchBookButton.setBounds(200, 90, 100, 20);
         searchBookButton.addActionListener(listener -> {
             showSearchResultsFrame(searchTextInput.getText());
         });
+        content.add(searchBookButton);
+    }
+
+    private void addCheckoutComponents(Container content) {
+        JLabel checkoutLabel = new JLabel("Checkout Book");
+        checkoutLabel.setBounds(0, 140, 500, 20);
+        checkoutLabel.setHorizontalAlignment(JLabel.CENTER);
+        content.add(checkoutLabel);
+
+        JLabel isbnLabel = new JLabel("Book ISBN");
+        isbnLabel.setBounds(100, 170, 100, 20);
+        content.add(isbnLabel);
+
+        JTextField checkoutTextInput = new JTextField();
+        checkoutTextInput.setBounds(200, 170, 200, 20);
+        content.add(checkoutTextInput);
+
+        JLabel borrowerIdLabel = new JLabel("Card ID");
+        borrowerIdLabel.setBounds(100, 200, 100, 20);
+        content.add(borrowerIdLabel);
+
+        JTextField checkoutBorrowerTextInput = new JTextField();
+        checkoutBorrowerTextInput.setBounds(200, 200, 200, 20);
+        content.add(checkoutBorrowerTextInput);
+
+        JButton checkoutBookButton = new JButton("Checkout");
+        checkoutBookButton.setBounds(200, 230, 100, 20);
         checkoutBookButton.addActionListener(listener -> {
             String isbn = checkoutTextInput.getText();
             String borrowerId = checkoutBorrowerTextInput.getText();
@@ -62,32 +85,42 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
             if (checkedOut) showSuccessFrame();
             else showErrorFrame();
         });
+        content.add(checkoutBookButton);
+    }
+
+    private void addCheckinComponents(Container content) {
+        JLabel checkinLabel = new JLabel("Checkin Book");
+        checkinLabel.setBounds(0, 280, 500, 20);
+        checkinLabel.setHorizontalAlignment(JLabel.CENTER);
+        content.add(checkinLabel);
+
+        JTextField checkinTextInput = new JTextField();
+        checkinTextInput.setBounds(150, 310, 200, 20);
+        checkinTextInput.setHorizontalAlignment(JLabel.CENTER);
+        content.add(checkinTextInput);
+
+        JButton checkinBookSearchButton = new JButton("Loan Search");
+        checkinBookSearchButton.setBounds(200, 340, 100, 20);
         checkinBookSearchButton.addActionListener(listener -> {
             showCheckinSearchResultsFrame(checkinTextInput.getText());
         });
-        addBorrowerFormButton.addActionListener(listener -> {
+        content.add(checkinBookSearchButton);
+    }
+
+    private void addBorrowerComponents(Container content) {
+        JLabel borrowerLabel = new JLabel("Borrower Registration");
+        borrowerLabel.setBounds(0, 390, 500, 20);
+        borrowerLabel.setHorizontalAlignment(JLabel.CENTER);
+        content.add(borrowerLabel);
+
+        JButton formButton = new JButton("Open Form");
+        formButton.setBounds(200, 420, 100, 20);
+        formButton.addActionListener(listener -> {
             showAddBorrowerForm();
         });
-
-        searchPanel.add(searchTextInput);
-        searchPanel.add(searchBookButton);
-
-        checkoutFormPanel.add(checkoutTextInput);
-        checkoutFormPanel.add(checkoutBorrowerTextInput);
-        checkoutPanel.add(checkoutFormPanel);
-        checkoutPanel.add(checkoutBookButton);
-
-        checkinPanel.add(checkinTextInput);
-        checkinPanel.add(checkinBookSearchButton);
-
-        addBorrowerFormButtonPanel.add(addBorrowerFormButton);
-
-        this.add(searchPanel);
-        this.add(checkoutPanel);
-        this.add(checkinPanel);
-        this.add(addBorrowerFormButtonPanel);
-        this.pack();
+        content.add(formButton);
     }
+
 
     private void showCheckinSearchResultsFrame(String searchQuery) {
         new CheckinSearchWindow(searchQuery, databaseService);
@@ -111,6 +144,7 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         });
         errorFrame.add(okButton);
         errorFrame.setSize(200, 200);
+        MainWindow.centerFrameOnScreen(errorFrame);
         errorFrame.setVisible(true);
     }
 
@@ -124,6 +158,17 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         });
         successFrame.add(okButton);
         successFrame.setSize(200, 200);
+        MainWindow.centerFrameOnScreen(successFrame);
         successFrame.setVisible(true);
+    }
+
+    static void centerFrameOnScreen(Frame frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = frame.getSize();
+
+        int x = (screenSize.width - frameSize.width) / 2;
+        int y = (screenSize.height - frameSize.height) / 2;
+
+        frame.setLocation(x, y);
     }
 }
