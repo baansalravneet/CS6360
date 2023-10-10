@@ -6,7 +6,7 @@ import java.awt.event.FocusListener;
 
 public class PromptTextField extends JTextField {
     public PromptTextField(final String promptText) {
-        super(promptText, 25);
+        super(promptText, 20);
         addFocusListener(new FocusListener() {
 
             @Override

@@ -27,6 +27,7 @@ public class CheckinSearchWindow extends JFrame {
 
     private void configure() {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
         this.setLayout(new FlowLayout());
     }
 

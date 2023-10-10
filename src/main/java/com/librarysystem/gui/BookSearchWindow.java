@@ -30,6 +30,7 @@ public class BookSearchWindow extends JFrame {
     private void configure() {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setLayout(new FlowLayout());
+        this.setLocationRelativeTo(null);
     }
 
     private void initialiseWithData(String searchQuery) {

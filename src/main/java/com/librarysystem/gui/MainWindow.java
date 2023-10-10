@@ -19,30 +19,38 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
     public MainWindow() {
         super("Library System"); // make a new JFrame
         configure(); // initialise with basic settings
-        setSize(750, 750);
+        setSize(411, 239);
     }
 
     private void configure() {
-        this.setLayout(new FlowLayout());
+        this.setLayout(new FlowLayout(FlowLayout.LEFT));
+        this.setLocation(600, 400);
+        this.setResizable(false);
         this.setVisible(true);
 
         JPanel searchPanel = new JPanel();
         JPanel checkoutPanel = new JPanel();
+        JPanel checkoutFormPanel = new JPanel();
         JPanel checkinPanel = new JPanel();
+        JPanel addBorrowerFormButtonPanel = new JPanel();
 
         searchPanel.setLayout(new FlowLayout());
+        checkoutFormPanel.setLayout(new BoxLayout(checkoutFormPanel, BoxLayout.Y_AXIS));
         checkoutPanel.setLayout(new FlowLayout());
         checkinPanel.setLayout(new FlowLayout());
+        addBorrowerFormButtonPanel.setLayout(new FlowLayout());
 
         JTextField searchTextInput = new PromptTextField("Search Prompt");
-        JButton searchBookButton = new JButton("Search");
+        JButton searchBookButton = new JButton("Book Search");
 
         JTextField checkoutTextInput = new PromptTextField("Book ISBN");
         JTextField checkoutBorrowerTextInput = new PromptTextField("Borrower ID");
         JButton checkoutBookButton = new JButton("Checkout");
 
-        JTextField checkinTextInput = new PromptTextField("Checkin Search");
-        JButton checkinBookSearchButton = new JButton("Search");
+        JTextField checkinTextInput = new PromptTextField("Checkin Search Prompt");
+        JButton checkinBookSearchButton = new JButton("Checkin Search");
+
+        JButton addBorrowerFormButton = new JButton("Show Add Borrower Form");
 
         searchBookButton.addActionListener(listener -> {
             showSearchResultsFrame(searchTextInput.getText());
@@ -57,20 +65,27 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         checkinBookSearchButton.addActionListener(listener -> {
             showCheckinSearchResultsFrame(checkinTextInput.getText());
         });
+        addBorrowerFormButton.addActionListener(listener -> {
+            showAddBorrowerForm();
+        });
 
         searchPanel.add(searchTextInput);
         searchPanel.add(searchBookButton);
 
-        checkoutPanel.add(checkoutTextInput);
-        checkoutPanel.add(checkoutBorrowerTextInput);
+        checkoutFormPanel.add(checkoutTextInput);
+        checkoutFormPanel.add(checkoutBorrowerTextInput);
+        checkoutPanel.add(checkoutFormPanel);
         checkoutPanel.add(checkoutBookButton);
 
         checkinPanel.add(checkinTextInput);
         checkinPanel.add(checkinBookSearchButton);
 
+        addBorrowerFormButtonPanel.add(addBorrowerFormButton);
+
         this.add(searchPanel);
         this.add(checkoutPanel);
         this.add(checkinPanel);
+        this.add(addBorrowerFormButtonPanel);
         this.pack();
     }
 
@@ -80,6 +95,10 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
 
     private void showSearchResultsFrame(String searchQuery) {
         new BookSearchWindow(searchQuery, databaseService);
+    }
+
+    private void showAddBorrowerForm() {
+        new AddBorrowerForm();
     }
 
     // TODO: This needs to change to show more verbose errors.
