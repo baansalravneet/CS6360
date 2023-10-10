@@ -61,13 +61,20 @@ public class Book {
     }
 
     public String getBookInfoString() {
-        return String.format("ISBN: %s\nTitle: %s\nAuthors: %s\nPublisher: %s\nPages: %d\nAvailable: %s",
-                isbn, title, getAuthorsString(), publisher, pages, available ? "Yes" : "No");
+        return String.format("ISBN: %s\nTitle: %s\nAuthors: %s\nPublisher: %s\nPages: %d\nAvailable: %s\nBorrowers:\n%s",
+                isbn, title, getAuthorsString(), publisher, pages, available ? "Yes" : "No", getBorrowersString());
+    }
+
+    private String getBorrowersString() {
+        String format = "CardID: %s\t Name: %s\n";
+        StringBuilder string = new StringBuilder();
+        this.getBorrowers().forEach(b -> string.append(String.format(format, b.getCardID(), b.getName())));
+        return string.toString();
     }
 
     @Override
     public boolean equals(Object book) {
-        if (book.getClass() != Book.class) return false;
+        if (book == null || book.getClass() != Book.class) return false;
         return this.getIsbn().equals(((Book)book).getIsbn());
     }
 

@@ -10,6 +10,7 @@ import com.librarysystem.db.repositories.BorrowerRepository;
 import com.librarysystem.db.repositories.LoanRepository;
 import com.librarysystem.models.Author;
 import com.librarysystem.models.Book;
+import com.librarysystem.models.Borrower;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,10 @@ public class DatabaseService {
 
     // TODO: populate this with borrowers
     static Book toBook(StoredBook sb) {
+        List<Borrower> borrowers = sb.getLoans().stream()
+                .map(StoredLoan::getBorrower).distinct().map(DatabaseService::toBorrower).toList();
         return new Book(sb.getIsbn(), sb.getTitle(), sb.getCoverUrl(), sb.getPublisher(), sb.getPages(),
-                toAuthors(sb.getAuthors()), sb.isAvailable(), null);
+                toAuthors(sb.getAuthors()), sb.isAvailable(), borrowers);
     }
 
     private static List<Author> toAuthors(List<StoredAuthor> storedAuthors) {
@@ -221,5 +224,10 @@ public class DatabaseService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private static Borrower toBorrower(StoredBorrower sb) {
+        return new Borrower(sb.getCardId(), sb.getSsn(), sb.getFirstName() + " " + sb.getLastName(),
+                sb.getAddress(), sb.getPhone());
     }
 }

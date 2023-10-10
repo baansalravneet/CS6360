@@ -65,7 +65,7 @@ public class StoredLoan {
 
     @Override
     public boolean equals(Object loan) {
-        if (loan.getClass() != StoredLoan.class) return false;
+        if (loan == null || loan.getClass() != StoredLoan.class) return false;
         return this.id.longValue() == ((StoredLoan)loan).getId().longValue();
     }
 
