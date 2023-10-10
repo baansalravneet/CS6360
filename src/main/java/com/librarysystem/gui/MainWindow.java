@@ -22,6 +22,7 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         this.setTitle("Library System");
         this.setSize(500, 500);
         this.setResizable(false);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         centerFrameOnScreen(this);
 
         Container content = this.getContentPane();

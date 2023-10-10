@@ -1,6 +1,5 @@
 package com.librarysystem.gui;
 
-import com.librarysystem.gui.customcomponents.PromptTextField;
 import com.librarysystem.models.Book;
 import com.librarysystem.services.DatabaseService;
 
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// TODO: add feature to search the intersection. Eg, all books named "GOOD BOOK" by "JOHN"
 public class BookSearchWindow extends JFrame {
 
     private static final String[] searchResultsColumnNames = {"ISBN", "Title", "Authors", "Available"};
@@ -21,47 +21,39 @@ public class BookSearchWindow extends JFrame {
     private DatabaseService databaseService;
 
     public BookSearchWindow(String searchQuery, DatabaseService databaseService) {
-        super("Book Search Results");
         this.databaseService = databaseService;
-        configure();
         initialiseWithData(searchQuery);
     }
 
-    private void configure() {
+    private void initialiseWithData(String seachQuery) {
+        this.setTitle("Book Search Results");
+        this.setSize(750, 750);
+        this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setLayout(new FlowLayout());
-        this.setLocationRelativeTo(null);
-    }
+        MainWindow.centerFrameOnScreen(this);
 
-    private void initialiseWithData(String searchQuery) {
-        JScrollPane searchResultPane = new JScrollPane();
-        JTable searchResultTable = addSearchResults(searchQuery);
-        searchResultPane.setViewportView(searchResultTable);
-        this.add(searchResultPane);
-        JButton searchBookResultFrameExitButton = new JButton("OK");
-        searchBookResultFrameExitButton.addActionListener(listener -> {
-            this.dispose();
-        });
-        this.add(searchBookResultFrameExitButton);
-        JButton checkoutButton = new JButton("Checkout");
-        JTextField checkoutBorrowerSearchTextInput = new PromptTextField("Borrower ID");
-        checkoutButton.addActionListener(listener -> {
-            List<String> selectedISBN = Arrays.stream(searchResultTable.getSelectedRows())
-                    .mapToObj(row -> (String) searchResultTable.getValueAt(row, 0)).toList();
-            String borrowerId = checkoutBorrowerSearchTextInput.getText();
-            boolean checkedOut = databaseService.checkout(selectedISBN, borrowerId);
-            if (!checkedOut) MainWindow.showErrorFrame();
-            else MainWindow.showSuccessFrame();
-        });
-        this.add(checkoutBorrowerSearchTextInput);
-        this.add(checkoutButton);
-        this.pack();
+        Container content = this.getContentPane();
+        content.setLayout(null);
+
+        JTable table = addTable(seachQuery, content);
+        addCheckoutComponents(content, table);
+
         this.setVisible(true);
     }
 
-    // TODO: add feature to search the intersection. Eg, all books named "GOOD BOOK" by "JOHN"
-    // TODO: fix table size
-    private JTable addSearchResults(String searchQuery) {
+    private JTable addTable(String searchQuery, Container content) {
+        JTable searchResultTable = new JTable();
+
+        populateTable(searchResultTable, searchQuery);
+
+        JScrollPane searchResultPane = new JScrollPane();
+        searchResultPane.setBounds(30, 30, 690, 600);
+        searchResultPane.setViewportView(searchResultTable);
+        content.add(searchResultPane);
+        return searchResultTable;
+    }
+
+    private void populateTable(JTable table, String searchQuery) {
         final List<Book> searchResults = new ArrayList<>();
         for (String s : searchQuery.split(" ")) {
             if (s.isEmpty()) continue;
@@ -76,8 +68,7 @@ public class BookSearchWindow extends JFrame {
             tableData[i] = searchResults.get(i).displayString();
         }
 
-        JTable searchResultTable = new JTable(tableData, searchResultsColumnNames);
-        TableModel jTableModel = new AbstractTableModel() { // this is define only to make the cells uneditable.
+        TableModel jTableModel = new AbstractTableModel() {
             @Override
             public int getRowCount() {
                 return tableData.length;
@@ -103,10 +94,9 @@ public class BookSearchWindow extends JFrame {
                 return false;
             }
         };
-        searchResultTable.setModel(jTableModel);
-        searchResultTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        searchResultTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        searchResultTable.addMouseListener(new MouseAdapter() {
+        table.setModel(jTableModel);
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table = (JTable) mouseEvent.getSource();
                 Point point = mouseEvent.getPoint();
@@ -118,7 +108,36 @@ public class BookSearchWindow extends JFrame {
                 }
             }
         });
-        return searchResultTable;
+    }
+
+    private void addCheckoutComponents(Container content, JTable table) {
+        JButton exitButton = new JButton("Exit");
+        exitButton.setBounds(600, 665, 100, 20);
+        exitButton.addActionListener(listener -> {
+            this.dispose();
+        });
+        content.add(exitButton);
+
+        JLabel borrower = new JLabel("Card ID");
+        borrower.setBounds(50, 665, 70, 20);
+        content.add(borrower);
+
+        JTextField cardId = new JTextField();
+        cardId.setBounds(120, 665, 200, 20);
+        content.add(cardId);
+
+        JButton checkoutButton = new JButton("Checkout");
+        checkoutButton.setBounds(350, 665, 100, 20);
+        content.add(checkoutButton);
+
+        checkoutButton.addActionListener(listener -> {
+            List<String> selectedISBN = Arrays.stream(table.getSelectedRows())
+                    .mapToObj(row -> (String) table.getValueAt(row, 0)).toList();
+            String borrowerId = cardId.getText();
+            boolean checkedOut = databaseService.checkout(selectedISBN, borrowerId);
+            if (!checkedOut) MainWindow.showErrorFrame();
+            else MainWindow.showSuccessFrame();
+        });
     }
 
     private void showBookInfoFrame(Book book) {
@@ -129,6 +148,7 @@ public class BookSearchWindow extends JFrame {
         bookInfoFrame.add(new TextArea(book.getBookInfoString()));
 
         bookInfoFrame.pack();
+        MainWindow.centerFrameOnScreen(bookInfoFrame);
         bookInfoFrame.setVisible(true);
     }
 }
