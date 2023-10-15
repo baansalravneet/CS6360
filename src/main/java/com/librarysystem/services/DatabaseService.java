@@ -1,9 +1,6 @@
 package com.librarysystem.services;
 
-import com.librarysystem.db.dao.StoredAuthor;
-import com.librarysystem.db.dao.StoredBook;
-import com.librarysystem.db.dao.StoredBorrower;
-import com.librarysystem.db.dao.StoredLoan;
+import com.librarysystem.db.dao.*;
 import com.librarysystem.db.repositories.AuthorRepository;
 import com.librarysystem.db.repositories.BookRepository;
 import com.librarysystem.db.repositories.BorrowerRepository;
@@ -216,7 +213,7 @@ public class DatabaseService {
                                     String city, String state, String phone) {
         // TODO: figure out a way to generate card id.
         // TODO: return the card id that is generated.
-        StoredBorrower sb = new StoredBorrower(UUID.randomUUID().toString(), ssn, firstName,
+        StoredBorrower sb = new StoredBorrower(generateCardId(), ssn, firstName,
                 lastName, email, address, state, city, phone);
         try {
             borrowerRepository.save(sb);
@@ -229,5 +226,15 @@ public class DatabaseService {
     private static Borrower toBorrower(StoredBorrower sb) {
         return new Borrower(sb.getCardId(), sb.getSsn(), sb.getFirstName() + " " + sb.getLastName(),
                 sb.getAddress(), sb.getPhone());
+    }
+
+    private String generateCardId() {
+        String prefix = "ID";
+        int count = getBorrowerCount();
+        return String.format("%s%06d", prefix, count + 1);
+    }
+
+    public int getBorrowerCount() {
+        return borrowerRepository.getCount();
     }
 }

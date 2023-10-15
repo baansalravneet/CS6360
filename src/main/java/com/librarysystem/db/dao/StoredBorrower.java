@@ -1,6 +1,5 @@
 package com.librarysystem.db.dao;
 
-import com.librarysystem.models.Book;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -88,6 +87,6 @@ public class StoredBorrower {
     @Override
     public boolean equals(Object a) {
         if (a == null || a.getClass() != StoredBorrower.class) return false;
-        return this.getCardId().equals(((StoredBorrower)a).getCardId());
+        return this.getCardId().equals(((StoredBorrower) a).getCardId());
     }
 }

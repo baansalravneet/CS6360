@@ -13,4 +13,7 @@ import java.util.List;
 public interface BorrowerRepository extends JpaRepository<StoredBorrower, String> {
     @Query(value = "SELECT * FROM BORROWERS WHERE LOWER(Fname) LIKE %:name% OR LOWER(Lname) LIKE %:name%", nativeQuery = true)
     List<StoredBorrower> getLoanByMatchingBorrowerName(@Param("name") String name);
+
+    @Query(value = "SELECT COUNT(*) FROM BORROWERS", nativeQuery = true)
+    int getCount();
 }
