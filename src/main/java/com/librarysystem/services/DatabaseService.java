@@ -12,8 +12,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -158,12 +161,12 @@ public class DatabaseService {
     // TODO: find a way to set the system time.
     @Transactional
     private void handleCheckout(List<StoredBook> books, StoredBorrower borrower) {
-        Timestamp dateOut = new Timestamp(System.currentTimeMillis());
-        Timestamp dueDate = new Timestamp(dateOut.getTime() + 14 * DAY_IN_MILLIS);
+        Date dateOut = new Date(System.currentTimeMillis());
+        Date dueDate = new Date(dateOut.getTime() + 14 * DAY_IN_MILLIS);
         books.forEach(b -> {
-            StoredLoan newLoan = new StoredLoan(null, b, borrower, dateOut, dueDate, null);
+            StoredLoan newLoan = new StoredLoan(null, b, borrower, dateOut, dueDate, null, null);
             b.setAvailable(false);
-            b.getLoans().add(new StoredLoan(null, b, borrower, dateOut, dueDate, null));
+            b.getLoans().add(new StoredLoan(null, b, borrower, dateOut, dueDate, null, null));
             borrower.getLoans().add(newLoan);
             saveBook(b);
         });
@@ -203,7 +206,7 @@ public class DatabaseService {
                 .peek(l -> l.getBook().setAvailable(true))
                 .findFirst();
         if (loan.isEmpty()) return false;
-        loan.get().setDateIn(new Timestamp(System.currentTimeMillis()));
+        loan.get().setDateIn(new Date(System.currentTimeMillis()));
         loanRepository.save(loan.get());
         return true;
     }
@@ -232,6 +235,21 @@ public class DatabaseService {
         String prefix = "ID";
         int count = getBorrowerCount();
         return String.format("%s%06d", prefix, count + 1);
+    }
+
+    public boolean updateFines() {
+        List<StoredLoan> overDueLoans = loanRepository.getOverdueLoans();
+        overDueLoans.stream()
+                .peek(loan -> {
+                    if (loan.getFine() == null) {
+                        StoredFine fine = new StoredFine(loan, null, false);
+                        loan.setFine(fine);
+                    }
+                })
+                .filter(loan -> !loan.getFine().isPaid())
+                .peek(loan -> loan.getFine().updateFine(loan.getDateIn(), loan.getDueDate()))
+                .forEach(loan -> loanRepository.save(loan));
+        return true;
     }
 
     public int getBorrowerCount() {

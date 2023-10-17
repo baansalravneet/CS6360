@@ -16,4 +16,8 @@ public interface LoanRepository extends JpaRepository<StoredLoan, Long> {
     @Query(value = "SELECT * FROM LOANS WHERE LOWER(Card_id) LIKE %:borrowerId%", nativeQuery = true)
     List<StoredLoan> getLoanByMatchingBorrowerId(@Param("borrowerId") String borrowerId);
 
+    @Query(value = "SELECT * FROM LOANS " +
+            "WHERE Due_date < Date_in " +
+            "OR (Date_in IS NULL AND CURRENT_DATE() > Due_date)", nativeQuery = true)
+    List<StoredLoan> getOverdueLoans();
 }

@@ -46,9 +46,9 @@ CREATE TABLE `LOANS` (
   `Id`          bigint          NOT NULL    AUTO_INCREMENT,
   `Isbn`        varchar(255)    NOT NULL,
   `Card_id`     varchar(255)    NOT NULL,
-  `Date_out`    TIMESTAMP       NOT NULL,
-  `Due_date`    TIMESTAMP       NOT NULL,
-  `Date_in`     TIMESTAMP,
+  `Date_out`    DATE            NOT NULL,
+  `Due_date`    DATE            NOT NULL,
+  `Date_in`     DATE,
   PRIMARY KEY (`Id`),
   CONSTRAINT `borrower_foreign_key` FOREIGN KEY (`Card_id`) REFERENCES `BORROWERS` (`Card_id`),
   CONSTRAINT `loan_book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOKS` (`Isbn`)

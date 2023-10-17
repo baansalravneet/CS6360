@@ -20,7 +20,7 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
 
     private void configure() {
         this.setTitle("Library System");
-        this.setSize(500, 500);
+        this.setSize(500, 580);
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         centerFrameOnScreen(this);
@@ -32,6 +32,7 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         addCheckoutComponents(content);
         addCheckinComponents(content);
         addBorrowerComponents(content);
+        addFineManagementComponents(content);
 
         this.setVisible(true);
     }
@@ -122,6 +123,20 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         content.add(formButton);
     }
 
+    private void addFineManagementComponents(Container content) {
+        JLabel fineManagementLabel = new JLabel("Fine Management");
+        fineManagementLabel.setBounds(0, 470, 500, 20);
+        fineManagementLabel.setHorizontalAlignment(JLabel.CENTER);
+        content.add(fineManagementLabel);
+
+        JButton formButton = new JButton("Open Control Panel");
+        formButton.setBounds(150, 500, 200, 20);
+        formButton.addActionListener(listener -> {
+            showFineControlPanel();
+        });
+        content.add(formButton);
+    }
+
 
     private void showCheckinSearchResultsFrame(String searchQuery) {
         new CheckinSearchWindow(searchQuery, databaseService);
@@ -133,6 +148,10 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
 
     private void showAddBorrowerForm() {
         new AddBorrowerForm(databaseService);
+    }
+
+    private void showFineControlPanel() {
+        new FineControlPanel(databaseService);
     }
 
     // TODO: This needs to change to show more verbose errors.
