@@ -24,7 +24,7 @@ public class FineControlPanel extends JFrame {
         content.setLayout(null);
 
         JButton updateFines = new JButton("Update Fines");
-        updateFines.setBounds(125, 50, 100, 20);
+        updateFines.setBounds(125, 30, 100, 20);
         updateFines.addActionListener(listener -> {
             if (databaseService.updateFines()) {
                 MainWindow.showSuccessFrame();
@@ -33,6 +33,8 @@ public class FineControlPanel extends JFrame {
             }
         });
         content.add(updateFines);
+
+
 
         this.setVisible(true);
     }

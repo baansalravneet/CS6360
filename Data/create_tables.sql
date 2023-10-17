@@ -51,7 +51,9 @@ CREATE TABLE `LOANS` (
   `Date_in`     DATE,
   PRIMARY KEY (`Id`),
   CONSTRAINT `borrower_foreign_key` FOREIGN KEY (`Card_id`) REFERENCES `BORROWERS` (`Card_id`),
-  CONSTRAINT `loan_book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOKS` (`Isbn`)
+  CONSTRAINT `loan_book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOKS` (`Isbn`),
+  CHECK (`Due_date` > `Date_out`),
+  CHECK (`Date_in` >= `Date_out`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `FINES` (
