@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LoanRepository extends JpaRepository<StoredLoan, Long> {
@@ -20,4 +21,10 @@ public interface LoanRepository extends JpaRepository<StoredLoan, Long> {
             "WHERE Due_date < Date_in " +
             "OR (Date_in IS NULL AND CURRENT_DATE() > Due_date)", nativeQuery = true)
     List<StoredLoan> getOverdueLoans();
+
+    @Query(value = "SELECT * FROM LOANS WHERE Id = :loanId", nativeQuery = true)
+    Optional<StoredLoan> getLoanById(@Param("loanId") long loanId);
+
+    @Query(value = "SELECT * FROM LOANS WHERE Card_id = :cardId", nativeQuery = true)
+    List<StoredLoan> getLoansByBorrowerId(@Param("cardId") String cardId);
 }

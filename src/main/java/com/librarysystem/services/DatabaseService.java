@@ -175,7 +175,7 @@ public class DatabaseService {
     public List<StoredLoan> getBookLoansForSearchQuery(String searchQuery) {
         List<StoredLoan> result = new ArrayList<>();
         result.addAll(getLoansByMatchingIsbn(searchQuery));
-        result.addAll(getLoansByBorrowerId(searchQuery));
+        result.addAll(getLoansByMatchingBorrowerId(searchQuery));
         result.addAll(getLoansByBorrowerName(searchQuery));
         return result;
     }
@@ -188,7 +188,7 @@ public class DatabaseService {
                 .collect(Collectors.toList());
     }
 
-    private List<StoredLoan> getLoansByBorrowerId(String searchQuery) {
+    private List<StoredLoan> getLoansByMatchingBorrowerId(String searchQuery) {
         return loanRepository.getLoanByMatchingBorrowerId(searchQuery);
     }
 
@@ -197,14 +197,9 @@ public class DatabaseService {
     }
 
     @Transactional
-    public boolean checkin(String isbn, String borrowerId) {
-        List<StoredLoan> loans = loanRepository.getLoanByMatchingIsbn(isbn);
-        Optional<StoredLoan> loan = loans.stream()
-                .filter(l -> l.getBook().getIsbn().equals(isbn))
-                .filter(l -> l.getDateIn() == null)
-                .filter(l -> l.getBorrower().getCardId().equals(borrowerId))
-                .peek(l -> l.getBook().setAvailable(true))
-                .findFirst();
+    public boolean checkin(long loanId) {
+        Optional<StoredLoan> loan = loanRepository.getLoanById(loanId)
+                .filter(l -> l.getDateIn() == null);
         if (loan.isEmpty()) return false;
         loan.get().setDateIn(new Date(System.currentTimeMillis()));
         loanRepository.save(loan.get());
@@ -254,5 +249,20 @@ public class DatabaseService {
 
     public int getBorrowerCount() {
         return borrowerRepository.getCount();
+    }
+
+    public List<StoredLoan> getLoansByBorrowerId(String cardId) {
+        return loanRepository.getLoansByBorrowerId(cardId);
+    }
+
+    @Transactional
+    public boolean handleFeePayment(long loanId) {
+        Optional<StoredLoan> loan = loanRepository.getLoanById(loanId);
+        loan = loan.filter(l -> l.getFine() != null)
+                .filter(l -> !l.getFine().isPaid());
+        if (loan.isEmpty()) return false;
+        loan.get().getFine().setPaid(true);
+        loanRepository.save(loan.get());
+        return true;
     }
 }

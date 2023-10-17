@@ -81,6 +81,7 @@ public class StoredLoan {
 
     public String[] displayString() {
         return new String[]{
+                String.valueOf(id),
                 book.getIsbn(),
                 book.getTitle(),
                 borrower.getCardId(),
@@ -94,14 +95,16 @@ public class StoredLoan {
     public String getLoanInfoString() {
         return String.format
                 (
+                        "ID: %d\n" +
                         "ISBN: %s\n" +
-                                "Title: %s\n" +
-                                "Borrower ID: %s\n" +
-                                "Borrower Name: %s\n" +
-                                "Checkout Date: %s\n" +
-                                "Due Date: %s\n" +
-                                "Checkin Date: %s",
+                        "Title: %s\n" +
+                        "Borrower ID: %s\n" +
+                        "Borrower Name: %s\n" +
+                        "Checkout Date: %s\n" +
+                        "Due Date: %s\n" +
+                        "Checkin Date: %s",
 
+                        id,
                         book.getIsbn(),
                         book.getTitle(),
                         borrower.getCardId(),

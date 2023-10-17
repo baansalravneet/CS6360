@@ -14,7 +14,10 @@ import java.util.List;
 
 public class CheckinSearchWindow extends JFrame {
 
-    private static final String[] checkinResultColumnNames = {"ISBN", "Title", "Borrower ID", "Name", "Checkout Date", "Due Date", "Checkin Date"};
+    private static final String[] checkinResultColumnNames =
+        {
+            "ID", "ISBN", "Title", "Borrower ID", "Borrower Name", "Checkout Date", "Due Date", "Checkin Date"
+        };
 
     private DatabaseService databaseService;
 
@@ -101,9 +104,9 @@ public class CheckinSearchWindow extends JFrame {
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    String isbn = tableData[row][0];
+                    long loanId = Long.parseLong(tableData[row][0]);
                     StoredLoan loan = searchResults.stream()
-                            .filter(b -> b.getBook().getIsbn().equals(isbn)).findFirst().get();
+                            .filter(l -> l.getId().equals(loanId)).findFirst().get();
                     showLoanInfoFrame(loan);
                 }
             }
@@ -126,9 +129,8 @@ public class CheckinSearchWindow extends JFrame {
                 MainWindow.showErrorFrame();
                 return;
             }
-            String isbn = (String) table.getValueAt(selectedRow[0], 0);
-            String borrowerId = (String) table.getValueAt(selectedRow[0], 2);
-            boolean checkin = databaseService.checkin(isbn, borrowerId);
+            long loanId = Long.parseLong((String) table.getValueAt(selectedRow[0], 0));
+            boolean checkin = databaseService.checkin(loanId);
             if (!checkin) MainWindow.showErrorFrame();
             else MainWindow.showSuccessFrame();
         });

@@ -44,4 +44,8 @@ public class StoredFine {
     public boolean isPaid() {
         return paid;
     }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
 }
