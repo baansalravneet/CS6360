@@ -15,6 +15,7 @@ public class FineControlPanel extends JFrame {
     private DatabaseService databaseService;
     private JScrollPane tablePane;
     private JTable feeTable;
+    private JLabel totalDueLabel;
 
     public FineControlPanel(DatabaseService databaseService) {
         this.databaseService = databaseService;
@@ -63,7 +64,7 @@ public class FineControlPanel extends JFrame {
         content.add(findDueButton);
 
         JButton payFeeButton = new JButton("Pay Fee");
-        payFeeButton.setBounds(125, 330, 100, 20);
+        payFeeButton.setBounds(200, 330, 100, 20);
         payFeeButton.addActionListener(listener -> {
             if (feeTable == null) return;
             int row = feeTable.getSelectedRow();
@@ -73,6 +74,10 @@ public class FineControlPanel extends JFrame {
             else MainWindow.showErrorFrame();
         });
         content.add(payFeeButton);
+
+        totalDueLabel = new JLabel("");
+        totalDueLabel.setBounds( 50, 330, 140, 20);
+        content.add(totalDueLabel);
 
         this.setVisible(true);
     }
@@ -87,24 +92,30 @@ public class FineControlPanel extends JFrame {
         content.add(tablePane);
     }
 
-    private void populateTable(JTable feeTable, String cardId, boolean filterPaid) {
-        List<StoredLoan> loans = databaseService.getLoansByBorrowerId(cardId)
-                .stream()
+    private double populateTable(JTable feeTable, String cardId, boolean filterPaid) {
+        List<StoredLoan> loans = databaseService.getLoansByBorrowerId(cardId);
+        double totalDue = loans.stream()
+                .filter(l -> l.getFine() != null)
+                .filter(l -> !l.getFine().isPaid())
+                .mapToDouble(l -> l.getFine().getFineAmount())
+                .sum();
+        totalDueLabel.setText(String.format("Total Due: %.2f", totalDue));
+        List<StoredLoan> filteredLoans = loans.stream()
                 .filter(l -> l.getFine() != null)
                 .filter(l -> {
                     if (filterPaid) return !l.getFine().isPaid();
                     return true;
                 })
                 .toList();
-        if (loans.isEmpty()) {
+        if (filteredLoans.isEmpty()) {
             MainWindow.showErrorFrame();
-            return;
+            return 0;
         }
-        String[][] tableData = new String[loans.size()][3];
-        for (int i = 0; i < loans.size(); i++) {
-            tableData[i][0] = String.valueOf(loans.get(i).getId());
-            tableData[i][1] = String.valueOf(loans.get(i).getFine().getFineAmount());
-            tableData[i][2] = loans.get(i).getFine().isPaid() ? "Yes" : "No";
+        String[][] tableData = new String[filteredLoans.size()][3];
+        for (int i = 0; i < filteredLoans.size(); i++) {
+            tableData[i][0] = String.valueOf(filteredLoans.get(i).getId());
+            tableData[i][1] = String.format("%.2f", filteredLoans.get(i).getFine().getFineAmount());
+            tableData[i][2] = filteredLoans.get(i).getFine().isPaid() ? "Yes" : "No";
         }
 
         TableModel jTableModel = new AbstractTableModel() {
@@ -135,5 +146,6 @@ public class FineControlPanel extends JFrame {
         };
         feeTable.setModel(jTableModel);
         feeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        return totalDue;
     }
 }
