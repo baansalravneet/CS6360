@@ -50,11 +50,15 @@ public class FineControlPanel extends JFrame {
         borrowerIdInput.setBounds(130, 80, 190, 20);
         content.add(borrowerIdInput);
 
+        JCheckBox filterPaidCheckBox = new JCheckBox("Filter paid loans");
+        filterPaidCheckBox.setBounds(30, 110, 140,20);
+        content.add(filterPaidCheckBox);
+
         JButton findDueButton = new JButton("Find Fee Due");
-        findDueButton.setBounds(125, 110, 100, 20);
+        findDueButton.setBounds(200, 110, 100, 20);
         findDueButton.addActionListener(listener -> {
             String cardId = borrowerIdInput.getText();
-            showFines(cardId, content);
+            showFines(cardId, content, filterPaidCheckBox.isSelected());
         });
         content.add(findDueButton);
 
@@ -73,20 +77,24 @@ public class FineControlPanel extends JFrame {
         this.setVisible(true);
     }
 
-    private void showFines(String cardId, Container content) {
+    private void showFines(String cardId, Container content, boolean filterPaid) {
         if (tablePane != null) this.remove(tablePane);
         feeTable = new JTable();
-        populateTable(feeTable, cardId);
+        populateTable(feeTable, cardId, filterPaid);
         tablePane = new JScrollPane();
         tablePane.setBounds(10, 140, 320, 180);
         tablePane.setViewportView(feeTable);
         content.add(tablePane);
     }
 
-    private void populateTable(JTable feeTable, String cardId) {
+    private void populateTable(JTable feeTable, String cardId, boolean filterPaid) {
         List<StoredLoan> loans = databaseService.getLoansByBorrowerId(cardId)
                 .stream()
                 .filter(l -> l.getFine() != null)
+                .filter(l -> {
+                    if (filterPaid) return !l.getFine().isPaid();
+                    return true;
+                })
                 .toList();
         if (loans.isEmpty()) {
             MainWindow.showErrorFrame();
