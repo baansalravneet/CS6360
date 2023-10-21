@@ -259,6 +259,7 @@ public class DatabaseService {
     public boolean handleFeePayment(long loanId) {
         Optional<StoredLoan> loan = loanRepository.getLoanById(loanId);
         loan = loan.filter(l -> l.getFine() != null)
+                .filter(l -> l.getDateIn() != null)
                 .filter(l -> !l.getFine().isPaid());
         if (loan.isEmpty()) return false;
         loan.get().getFine().setPaid(true);

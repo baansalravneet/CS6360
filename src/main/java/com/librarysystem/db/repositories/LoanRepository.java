@@ -19,7 +19,7 @@ public interface LoanRepository extends JpaRepository<StoredLoan, Long> {
 
     @Query(value = "SELECT * FROM LOANS " +
             "WHERE Due_date < Date_in " +
-            "OR (Date_in IS NULL AND CURRENT_DATE() > Due_date)", nativeQuery = true)
+            "OR (Date_in IS NOT NULL AND CURRENT_DATE() > Due_date)", nativeQuery = true)
     List<StoredLoan> getOverdueLoans();
 
     @Query(value = "SELECT * FROM LOANS WHERE Id = :loanId", nativeQuery = true)

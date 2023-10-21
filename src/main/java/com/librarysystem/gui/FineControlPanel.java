@@ -81,8 +81,6 @@ public class FineControlPanel extends JFrame {
         tablePane.setBounds(10, 140, 320, 180);
         tablePane.setViewportView(feeTable);
         content.add(tablePane);
-
-
     }
 
     private void populateTable(JTable feeTable, String cardId) {
