@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class BookResource {
+public class LibraryResource {
 
     @Autowired
     private DatabaseService databaseService;
@@ -21,7 +21,12 @@ public class BookResource {
     }
 
     @PostMapping("/addBooks")
-    public boolean addBooks(@RequestBody List<Book> books) throws InterruptedException {
+    public boolean addBooks(@RequestBody List<Book> books) {
         return databaseService.addBooks(books);
+    }
+
+    @PostMapping("/updateFines")
+    public boolean updateFines() {
+        return databaseService.updateFines();
     }
 }
