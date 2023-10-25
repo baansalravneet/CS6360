@@ -1,6 +1,7 @@
 package com.librarysystem.gui;
 
 import com.librarysystem.db.dao.StoredLoan;
+import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 
 import javax.swing.*;
@@ -36,9 +37,9 @@ public class FineControlPanel extends JFrame {
         updateFines.setBounds(125, 30, 100, 20);
         updateFines.addActionListener(listener -> {
             if (databaseService.updateFines()) {
-                MainWindow.showSuccessFrame();
+                MainWindow.showResponseFrame(new Response());
             } else {
-                MainWindow.showErrorFrame();
+                MainWindow.showResponseFrame(new Response("Error Occurred"));
             }
         });
         content.add(updateFines);
@@ -70,8 +71,8 @@ public class FineControlPanel extends JFrame {
             int row = feeTable.getSelectedRow();
             if (row == -1) return;
             long loanId = Long.parseLong((String) feeTable.getValueAt(row, 0));
-            if (databaseService.handleFeePayment(loanId)) MainWindow.showSuccessFrame();
-            else MainWindow.showErrorFrame();
+            if (databaseService.handleFeePayment(loanId)) MainWindow.showResponseFrame(new Response());
+            else MainWindow.showResponseFrame(new Response("Error Occurred"));
         });
         content.add(payFeeButton);
 
@@ -108,7 +109,7 @@ public class FineControlPanel extends JFrame {
                 })
                 .toList();
         if (filteredLoans.isEmpty()) {
-            MainWindow.showErrorFrame();
+            MainWindow.showResponseFrame(new Response("No loans to show"));
             return 0;
         }
         String[][] tableData = new String[filteredLoans.size()][3];

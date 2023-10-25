@@ -35,7 +35,7 @@ CREATE TABLE `BORROWER` (
   `Email`       VARCHAR(255)    NOT NULL,
   `Address`     VARCHAR(255)    NOT NULL,
   `City`        VARCHAR(255)    NOT NULL,
-  `State`       VARCHAR(255)    NOT NULL,
+  `State`       VARCHAR(2)      NOT NULL,
   `Phone`       VARCHAR(255)    NOT NULL,
   PRIMARY KEY (`Card_id`),
   UNIQUE KEY `ssn_key` (`Ssn`)
@@ -43,8 +43,8 @@ CREATE TABLE `BORROWER` (
 
 CREATE TABLE `BOOK_LOANS` (
   `Loan_id`     BIGINT          NOT NULL    AUTO_INCREMENT,
-  `Isbn`        varchar(255)    NOT NULL,
-  `Card_id`     varchar(255)    NOT NULL,
+  `Isbn`        VARCHAR(255)    NOT NULL,
+  `Card_id`     VARCHAR(255)    NOT NULL,
   `Date_out`    DATE            NOT NULL,
   `Due_date`    DATE            NOT NULL,
   `Date_in`     DATE,

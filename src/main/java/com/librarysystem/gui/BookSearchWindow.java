@@ -1,6 +1,7 @@
 package com.librarysystem.gui;
 
 import com.librarysystem.models.Book;
+import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 
 import javax.swing.*;
@@ -135,8 +136,8 @@ public class BookSearchWindow extends JFrame {
                     .mapToObj(row -> (String) table.getValueAt(row, 0)).toList();
             String borrowerId = cardId.getText();
             boolean checkedOut = databaseService.checkout(selectedISBN, borrowerId);
-            if (!checkedOut) MainWindow.showErrorFrame();
-            else MainWindow.showSuccessFrame();
+            if (!checkedOut) MainWindow.showResponseFrame(new Response("Error Occurred"));
+            else MainWindow.showResponseFrame(new Response());
         });
     }
 

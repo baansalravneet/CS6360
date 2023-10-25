@@ -1,6 +1,7 @@
 package com.librarysystem.gui;
 
 import com.librarysystem.db.dao.StoredLoan;
+import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 
 import javax.swing.*;
@@ -126,13 +127,13 @@ public class CheckinSearchWindow extends JFrame {
         checkinButton.addActionListener(listener -> {
             int[] selectedRow = table.getSelectedRows();
             if (selectedRow.length == 0) {
-                MainWindow.showErrorFrame();
+                MainWindow.showResponseFrame(new Response("Please select a row"));
                 return;
             }
             long loanId = Long.parseLong((String) table.getValueAt(selectedRow[0], 0));
             boolean checkin = databaseService.checkin(loanId);
-            if (!checkin) MainWindow.showErrorFrame();
-            else MainWindow.showSuccessFrame();
+            if (!checkin) MainWindow.showResponseFrame(new Response("Error Occurred"));
+            else MainWindow.showResponseFrame(new Response());
         });
         content.add(checkinButton);
     }

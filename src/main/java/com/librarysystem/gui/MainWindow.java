@@ -1,5 +1,6 @@
 package com.librarysystem.gui;
 
+import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -84,8 +85,8 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
             String isbn = checkoutTextInput.getText();
             String borrowerId = checkoutBorrowerTextInput.getText();
             boolean checkedOut = databaseService.checkout(List.of(isbn), borrowerId);
-            if (checkedOut) showSuccessFrame();
-            else showErrorFrame();
+            if (checkedOut) showResponseFrame(new Response());
+            else showResponseFrame(new Response("Error Occurred"));
         });
         content.add(checkoutBookButton);
     }
@@ -154,30 +155,46 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         new FineControlPanel(databaseService);
     }
 
+    static void showResponseFrame(Response response) {
+        if (response.isSuccess()) {
+            showSuccessFrame();
+        } else showErrorFrame(response.getErrorMessage());
+    }
+
     // TODO: This needs to change to show more verbose errors.
-    static void showErrorFrame() {
+    private static void showErrorFrame(String errorMessage) {
         JFrame errorFrame = new JFrame("Error!");
+        errorFrame.setLayout(null);
+        errorFrame.setResizable(false);
         errorFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        JLabel errorMessageField = new JLabel(errorMessage);
+        errorMessageField.setHorizontalAlignment(0);
         JButton okButton = new JButton("OK");
+        okButton.setBounds(100,50,100, 20);
+        errorMessageField.setBounds(0, 15, 300, 20);
         okButton.addActionListener(listener -> {
             errorFrame.dispose();
         });
-        errorFrame.add(okButton);
-        errorFrame.setSize(200, 200);
+        errorFrame.getContentPane().add(okButton);
+        errorFrame.getContentPane().add(errorMessageField);
+        errorFrame.setSize(300, 120);
         MainWindow.centerFrameOnScreen(errorFrame);
         errorFrame.setVisible(true);
     }
 
-    // TODO: This needs to change to show more verbose errors.
-    static void showSuccessFrame() {
+    private static void showSuccessFrame() {
         JFrame successFrame = new JFrame("Success!");
+        successFrame.setLayout(null);
+        successFrame.setResizable(false);
         successFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        successFrame.setSize(200, 200);
         JButton okButton = new JButton("OK");
+        okButton.setBounds(100,30,100, 20);
         okButton.addActionListener(listener -> {
             successFrame.dispose();
         });
-        successFrame.add(okButton);
-        successFrame.setSize(200, 200);
+        successFrame.getContentPane().add(okButton);
+        successFrame.setSize(300, 120);
         MainWindow.centerFrameOnScreen(successFrame);
         successFrame.setVisible(true);
     }

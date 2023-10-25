@@ -1,5 +1,6 @@
 package com.librarysystem.gui;
 
+import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 
 import javax.swing.*;
@@ -100,7 +101,7 @@ public class AddBorrowerForm extends JFrame {
             String _state = stateInput.getText();
             String _phone = phoneInput.getText();
 
-            if (!validSsn(_ssn)) MainWindow.showErrorFrame();
+            if (!validSsn(_ssn)) MainWindow.showResponseFrame(new Response("Invalid SSN"));
             else if (_firstName.length() == 0
                     || _lastName.length() == 0
                     || _email.length() == 0
@@ -108,13 +109,13 @@ public class AddBorrowerForm extends JFrame {
                     || _city.length() == 0
                     || _state.length() == 0
                     || _phone.length() == 0) {
-                MainWindow.showErrorFrame();
+                MainWindow.showResponseFrame(new Response("All fields are mandatory"));
             } else {
                 // TODO: make this into a request object
                 // TODO: return a proper error message
                 if (databaseService.registerBorrower(_ssn, _firstName, _lastName,
-                        _email, _address, _city, _state, _phone)) MainWindow.showSuccessFrame();
-                else MainWindow.showErrorFrame();
+                        _email, _address, _city, _state, _phone)) MainWindow.showResponseFrame(new Response());
+                else MainWindow.showResponseFrame(new Response("Error Occurred"));
             }
         });
         content.add(addButton);
