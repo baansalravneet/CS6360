@@ -10,7 +10,7 @@ import java.util.Set;
 @Table(name = "AUTHORS")
 public class StoredAuthor {
     @Id
-    @Column(name = "Id")
+    @Column(name = "Author_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "Name")
@@ -19,7 +19,7 @@ public class StoredAuthor {
     @JoinTable(
             name = "BOOK_AUTHORS",
             joinColumns = @JoinColumn(name = "Author_id"),
-            inverseJoinColumns = @JoinColumn(name = "Book_id")
+            inverseJoinColumns = @JoinColumn(name = "Isbn")
     )
     private List<StoredBook> books = new ArrayList<>();
 

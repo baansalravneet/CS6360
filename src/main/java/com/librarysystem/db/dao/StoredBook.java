@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "BOOKS")
+@Table(name = "BOOK")
 public class StoredBook {
     @Id
     @Column(name = "Isbn")

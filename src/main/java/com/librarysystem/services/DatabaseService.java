@@ -209,10 +209,9 @@ public class DatabaseService {
     @Transactional
     public boolean registerBorrower(String ssn, String firstName, String lastName, String email, String address,
                                     String city, String state, String phone) {
-        // TODO: figure out a way to generate card id.
         // TODO: return the card id that is generated.
-        StoredBorrower sb = new StoredBorrower(generateCardId(), ssn, firstName,
-                lastName, email, address, state, city, phone);
+        StoredBorrower sb = new StoredBorrower(generateCardId(), ssn, firstName + " " + lastName,
+                email, address, state, city, phone);
         try {
             borrowerRepository.save(sb);
             return true;
@@ -222,8 +221,7 @@ public class DatabaseService {
     }
 
     private static Borrower toBorrower(StoredBorrower sb) {
-        return new Borrower(sb.getCardId(), sb.getSsn(), sb.getFirstName() + " " + sb.getLastName(),
-                sb.getAddress(), sb.getPhone());
+        return new Borrower(sb.getCardId(), sb.getSsn(), sb.getName(), sb.getAddress(), sb.getPhone());
     }
 
     private String generateCardId() {

@@ -5,21 +5,20 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "BORROWERS")
+@Table(name = "BORROWER")
 public class StoredBorrower {
     @Id
     @Column(name = "Card_id")
     private String cardId;
     @Column(unique = true, name = "Ssn", nullable = false)
     private String ssn;
-    @Column(name = "Fname")
-    private String firstName;
-    @Column(name = "Lname")
-    private String lastName;
+    @Column(name = "Bname")
+    private String name;
     @Column(name = "Email")
     private String email;
     @Column(name = "Address")
     private String address;
+    // TODO: Restrict this to string of size 2 with only capital letters
     @Column(name = "State")
     private String state;
     @Column(name = "City")
@@ -32,11 +31,10 @@ public class StoredBorrower {
     public StoredBorrower() {
     }
 
-    public StoredBorrower(String cardId, String ssn, String firstName, String lastName, String email, String address, String state, String city, String phone) {
+    public StoredBorrower(String cardId, String ssn, String name, String email, String address, String state, String city, String phone) {
         this.cardId = cardId;
         this.ssn = ssn;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.email = email;
         this.address = address;
         this.state = state;
@@ -72,12 +70,8 @@ public class StoredBorrower {
         return city;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public String getName() {
+        return name;
     }
 
     public List<StoredLoan> getLoans() {

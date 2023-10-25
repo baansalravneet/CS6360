@@ -5,10 +5,10 @@ import jakarta.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table(name = "LOANS")
+@Table(name = "BOOK_LOANS")
 public class StoredLoan {
     @Id
-    @Column(name = "Id")
+    @Column(name = "Loan_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER,
@@ -85,7 +85,7 @@ public class StoredLoan {
                 book.getIsbn(),
                 book.getTitle(),
                 borrower.getCardId(),
-                borrower.getFirstName() + " " + borrower.getLastName(),
+                borrower.getName(),
                 dateOut.toString(),
                 dueDate.toString(),
                 dateIn == null ? "" : dateIn.toString()
@@ -108,7 +108,7 @@ public class StoredLoan {
                         book.getIsbn(),
                         book.getTitle(),
                         borrower.getCardId(),
-                        borrower.getFirstName() + " " + borrower.getLastName(),
+                        borrower.getName(),
                         dateOut.toString(),
                         dueDate.toString(),
                         dateIn == null ? "" : dateIn.toString()

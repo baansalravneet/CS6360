@@ -60,9 +60,8 @@ public class AddBorrowerForm extends JFrame {
         address.setBounds(30, 130, 100, 26);
         content.add(address);
 
-        JTextArea addressInput = new JTextArea();
-        addressInput.setBounds(135, 130, 180, 60);
-        addressInput.setLineWrap(true);
+        JTextField addressInput = new JTextField();
+        addressInput.setBounds(130, 130, 190, 60);
         content.add(addressInput);
 
         JLabel city = new JLabel("City");

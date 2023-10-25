@@ -13,10 +13,10 @@ authors_file = codecs.open('insert_authors.sql', 'w', 'utf-8')
 book_authors_file = codecs.open('insert_book_authors.sql', 'w', 'utf-8')
 borrowers_file = codecs.open('insert_borrowers.sql', 'w', 'utf-8')
 
-insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOKS VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
+insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOK VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
 insert_query_authors = '''REPLACE INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
 insert_query_book_authors = '''INSERT INTO LIBRARY_DATABASE.BOOK_AUTHORS VALUES ('%s', %d);\n'''
-insert_query_borrowers = '''INSERT INTO LIBRARY_DATABASE.BORROWERS VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n'''
+insert_query_borrowers = '''INSERT INTO LIBRARY_DATABASE.BORROWER VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n'''
 
 data = []
 with open(books_input, mode='r', newline='\n') as file:
@@ -70,7 +70,7 @@ def get_borrowers_query(row):
     city = row['city']
     state = row['state']
     phone = row['phone']
-    return insert_query_borrowers % (card_id, ssn, first_name, last_name, email, address, city, state, phone)
+    return insert_query_borrowers % (card_id, ssn, first_name+" "+last_name, email, address, city, state, phone)
 
 for row in borrowers_data:
     borrowers_file.write(get_borrowers_query(row))
