@@ -7,8 +7,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class LibrarySystemApplication {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(LibrarySystemApplication.class)
-                .headless(false)
-                .run(args);
+       new SpringApplicationBuilder(LibrarySystemApplication.class)
+               .headless(false)
+               .run(args);
     }
 }

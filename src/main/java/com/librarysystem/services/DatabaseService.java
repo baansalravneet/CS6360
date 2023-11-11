@@ -8,6 +8,8 @@ import com.librarysystem.db.repositories.LoanRepository;
 import com.librarysystem.models.Author;
 import com.librarysystem.models.Book;
 import com.librarysystem.models.Borrower;
+import com.librarysystem.models.FineSummary;
+
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -263,5 +265,9 @@ public class DatabaseService {
         loan.get().getFine().setPaid(true);
         loanRepository.save(loan.get());
         return true;
+    }
+
+    public List<FineSummary> getFinesSummary() {
+        return loanRepository.getFineSummaries();
     }
 }

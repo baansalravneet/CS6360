@@ -1,6 +1,7 @@
 package com.librarysystem.gui;
 
 import com.librarysystem.db.dao.StoredLoan;
+import com.librarysystem.models.FineSummary;
 import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 
@@ -11,7 +12,8 @@ import java.awt.*;
 import java.util.List;
 
 public class FineControlPanel extends JFrame {
-    private static final String[] columnNames = new String[]{"Loan ID", "Amount", "Paid"};
+    private static final String[] columnNames = new String[] {"Loan ID", "Amount", "Paid"};
+    private static final String[] finesColumnNames = new String[] {"Card ID", "Paid", "Amount"};
 
     private DatabaseService databaseService;
     private JScrollPane tablePane;
@@ -33,8 +35,15 @@ public class FineControlPanel extends JFrame {
         Container content = this.getContentPane();
         content.setLayout(null);
 
+        JButton showAllFinesButton = new JButton("Show all Fines");
+        showAllFinesButton.setBounds(50, 30, 100, 20);
+        showAllFinesButton.addActionListener(listener -> {
+            showFinesFrame();
+        });
+        content.add(showAllFinesButton);
+
         JButton updateFines = new JButton("Update Fines");
-        updateFines.setBounds(125, 30, 100, 20);
+        updateFines.setBounds(200, 30, 100, 20);
         updateFines.addActionListener(listener -> {
             if (databaseService.updateFines()) {
                 MainWindow.showResponseFrame(new Response());
@@ -77,10 +86,30 @@ public class FineControlPanel extends JFrame {
         content.add(payFeeButton);
 
         totalDueLabel = new JLabel("");
-        totalDueLabel.setBounds( 50, 330, 140, 20);
+        totalDueLabel.setBounds(50, 330, 140, 20);
         content.add(totalDueLabel);
 
         this.setVisible(true);
+    }
+
+    private void showFinesFrame() {
+        JFrame finesFrame = new JFrame();
+        finesFrame.setTitle("Fines");
+        finesFrame.setBounds(0, 0, 400, 500);
+        finesFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        finesFrame.setResizable(false);
+        MainWindow.centerFrameOnScreen(finesFrame);
+        Container content = finesFrame.getContentPane();
+        content.setLayout(null);
+        
+        feeTable = new JTable();
+        populateFeeTable(feeTable);
+        
+        tablePane = new JScrollPane();
+        tablePane.setBounds(30, 30, 330, 400);
+        tablePane.setViewportView(feeTable);
+        content.add(tablePane);
+        finesFrame.setVisible(true);
     }
 
     private void showFines(String cardId, Container content, boolean filterPaid) {
@@ -91,6 +120,44 @@ public class FineControlPanel extends JFrame {
         tablePane.setBounds(10, 140, 320, 180);
         tablePane.setViewportView(feeTable);
         content.add(tablePane);
+    }
+
+    private void populateFeeTable(JTable feeTable) {
+        List<FineSummary> fines = databaseService.getFinesSummary();
+        String[][] tableData = new String[fines.size()][3];
+        for (int i = 0; i < fines.size(); i++) {
+            tableData[i][0] = fines.get(i).getCardId();
+            tableData[i][1] = fines.get(i).getPaid() ? "Yes" : "No";
+            tableData[i][2] = String.format("%.2f", fines.get(i).getAmount());
+        }
+
+        TableModel jTableModel = new AbstractTableModel() {
+            @Override
+            public int getRowCount() {
+                return tableData.length;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 3;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return tableData[rowIndex][columnIndex];
+            }
+
+            @Override
+            public String getColumnName(int columnIndex) {
+                return finesColumnNames[columnIndex];
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) { // this is redundant
+                return false;
+            }
+        };
+        feeTable.setModel(jTableModel);
     }
 
     private double populateTable(JTable feeTable, String cardId, boolean filterPaid) {
