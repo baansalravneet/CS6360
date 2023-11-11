@@ -1,7 +1,6 @@
 package com.librarysystem.db.repositories;
 
 import com.librarysystem.db.dao.StoredBorrower;
-import com.librarysystem.db.dao.StoredLoan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

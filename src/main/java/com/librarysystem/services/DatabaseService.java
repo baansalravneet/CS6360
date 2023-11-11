@@ -9,6 +9,7 @@ import com.librarysystem.models.Author;
 import com.librarysystem.models.Book;
 import com.librarysystem.models.Borrower;
 import com.librarysystem.models.FineSummary;
+import com.librarysystem.models.Response;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,13 +136,11 @@ public class DatabaseService {
     }
 
     // TODO: batch update?
-    // TODO: return proper errors to show on the GUI
-    // TODO: Try to move these checks at the DB level
-    public boolean checkout(List<String> selectedISBN, String borrowerId) {
-        if (selectedISBN.isEmpty()) return false;
+    public Response checkout(List<String> selectedISBN, String borrowerId) {
+        if (selectedISBN.isEmpty()) return new Response("ISBN not provided");
         // check if borrower exist
         Optional<StoredBorrower> storedBorrower = borrowerRepository.findById(borrowerId);
-        if (storedBorrower.isEmpty()) return false;
+        if (storedBorrower.isEmpty()) return new Response("Borrower not in the system");
         List<StoredBook> books = selectedISBN.stream()
                 .map(this::getBookByExactIsbn)
                 .filter(Optional::isPresent)
@@ -150,14 +149,16 @@ public class DatabaseService {
                 .toList();
         // check if the borrower can borrow the number of books requested
         if (storedBorrower.get().getLoans()
-                .stream().filter(sl -> sl.getDateIn() == null).count() + books.size() > 3) return false;
+                .stream().filter(sl -> sl.getDateIn() == null).count() + books.size() > 3) {
+                     return new Response("Each borrower can check out 3 books.");
+                }
         // check if all the books requested are available or not
         if (books.size() != selectedISBN.size()) {
-            return false;
+            return new Response("Selected book is not available");
         }
         // handle checkout
         handleCheckout(books, storedBorrower.get());
-        return true;
+        return new Response();
     }
 
     // TODO: find a way to set the system time.
@@ -199,26 +200,26 @@ public class DatabaseService {
     }
 
     @Transactional
-    public boolean checkin(long loanId) {
+    public Response checkin(long loanId) {
         Optional<StoredLoan> loan = loanRepository.getLoanById(loanId)
                 .filter(l -> l.getDateIn() == null);
-        if (loan.isEmpty()) return false;
+        if (loan.isEmpty()) return new Response("No loans found!");
         loan.get().setDateIn(new Date(System.currentTimeMillis()));
         loanRepository.save(loan.get());
-        return true;
+        return new Response();
     }
 
     @Transactional
-    public boolean registerBorrower(String ssn, String firstName, String lastName, String email, String address,
+    public Response registerBorrower(String ssn, String firstName, String lastName, String email, String address,
                                     String city, String state, String phone) {
         // TODO: return the card id that is generated.
         StoredBorrower sb = new StoredBorrower(generateCardId(), ssn, firstName + " " + lastName,
                 email, address, state, city, phone);
         try {
             borrowerRepository.save(sb);
-            return true;
+            return new Response();
         } catch (Exception e) {
-            return false;
+            return new Response("Error Occured while saving");
         }
     }
 
@@ -232,19 +233,23 @@ public class DatabaseService {
         return String.format("%s%06d", prefix, count + 1);
     }
 
-    public boolean updateFines() {
-        List<StoredLoan> overDueLoans = loanRepository.getOverdueLoans();
-        overDueLoans.stream()
-                .peek(loan -> {
-                    if (loan.getFine() == null) {
-                        StoredFine fine = new StoredFine(loan, null, false);
-                        loan.setFine(fine);
-                    }
-                })
-                .filter(loan -> !loan.getFine().isPaid())
-                .peek(loan -> loan.getFine().updateFine(loan.getDateIn(), loan.getDueDate()))
-                .forEach(loan -> loanRepository.save(loan));
-        return true;
+    public Response updateFines() {
+        try {
+            List<StoredLoan> overDueLoans = loanRepository.getOverdueLoans();
+            overDueLoans.stream()
+                    .peek(loan -> {
+                        if (loan.getFine() == null) {
+                            StoredFine fine = new StoredFine(loan, null, false);
+                            loan.setFine(fine);
+                        }
+                    })
+                    .filter(loan -> !loan.getFine().isPaid())
+                    .peek(loan -> loan.getFine().updateFine(loan.getDateIn(), loan.getDueDate()))
+                    .forEach(loan -> loanRepository.save(loan));
+        } catch (Exception e) {
+            return new Response("Error occured.");
+        }
+        return new Response();
     }
 
     public int getBorrowerCount() {
@@ -256,15 +261,15 @@ public class DatabaseService {
     }
 
     @Transactional
-    public boolean handleFeePayment(long loanId) {
+    public Response handleFeePayment(long loanId) {
         Optional<StoredLoan> loan = loanRepository.getLoanById(loanId);
         loan = loan.filter(l -> l.getFine() != null)
                 .filter(l -> l.getDateIn() != null)
                 .filter(l -> !l.getFine().isPaid());
-        if (loan.isEmpty()) return false;
+        if (loan.isEmpty()) return new Response("No loans found!");
         loan.get().getFine().setPaid(true);
         loanRepository.save(loan.get());
-        return true;
+        return new Response();
     }
 
     public List<FineSummary> getFinesSummary() {

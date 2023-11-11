@@ -135,9 +135,8 @@ public class BookSearchWindow extends JFrame {
             List<String> selectedISBN = Arrays.stream(table.getSelectedRows())
                     .mapToObj(row -> (String) table.getValueAt(row, 0)).toList();
             String borrowerId = cardId.getText();
-            boolean checkedOut = databaseService.checkout(selectedISBN, borrowerId);
-            if (!checkedOut) MainWindow.showResponseFrame(new Response("Error Occurred"));
-            else MainWindow.showResponseFrame(new Response());
+            Response checkedOut = databaseService.checkout(selectedISBN, borrowerId);
+            MainWindow.showResponseFrame(checkedOut);
         });
     }
 

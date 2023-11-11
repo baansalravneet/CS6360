@@ -45,11 +45,8 @@ public class FineControlPanel extends JFrame {
         JButton updateFines = new JButton("Update Fines");
         updateFines.setBounds(200, 30, 100, 20);
         updateFines.addActionListener(listener -> {
-            if (databaseService.updateFines()) {
-                MainWindow.showResponseFrame(new Response());
-            } else {
-                MainWindow.showResponseFrame(new Response("Error Occurred"));
-            }
+            Response updated = databaseService.updateFines();
+            MainWindow.showResponseFrame(updated);
         });
         content.add(updateFines);
 
@@ -80,8 +77,8 @@ public class FineControlPanel extends JFrame {
             int row = feeTable.getSelectedRow();
             if (row == -1) return;
             long loanId = Long.parseLong((String) feeTable.getValueAt(row, 0));
-            if (databaseService.handleFeePayment(loanId)) MainWindow.showResponseFrame(new Response());
-            else MainWindow.showResponseFrame(new Response("Error Occurred"));
+            Response paid = databaseService.handleFeePayment(loanId);
+            MainWindow.showResponseFrame(paid);
         });
         content.add(payFeeButton);
 

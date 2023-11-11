@@ -84,9 +84,8 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         checkoutBookButton.addActionListener(listener -> {
             String isbn = checkoutTextInput.getText();
             String borrowerId = checkoutBorrowerTextInput.getText();
-            boolean checkedOut = databaseService.checkout(List.of(isbn), borrowerId);
-            if (checkedOut) showResponseFrame(new Response());
-            else showResponseFrame(new Response("Error Occurred"));
+            Response checkedOut = databaseService.checkout(List.of(isbn), borrowerId);
+            showResponseFrame(checkedOut);
         });
         content.add(checkoutBookButton);
     }
@@ -161,7 +160,6 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         } else showErrorFrame(response.getErrorMessage());
     }
 
-    // TODO: This needs to change to show more verbose errors.
     private static void showErrorFrame(String errorMessage) {
         JFrame errorFrame = new JFrame("Error!");
         errorFrame.setLayout(null);

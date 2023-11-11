@@ -1,6 +1,7 @@
 package com.librarysystem.resources;
 
 import com.librarysystem.models.Book;
+import com.librarysystem.models.Response;
 import com.librarysystem.services.DatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ public class LibraryResource {
     }
 
     @PostMapping("/updateFines")
-    public boolean updateFines() {
+    public Response updateFines() {
         return databaseService.updateFines();
     }
 }

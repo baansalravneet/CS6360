@@ -131,9 +131,8 @@ public class CheckinSearchWindow extends JFrame {
                 return;
             }
             long loanId = Long.parseLong((String) table.getValueAt(selectedRow[0], 0));
-            boolean checkin = databaseService.checkin(loanId);
-            if (!checkin) MainWindow.showResponseFrame(new Response("Error Occurred"));
-            else MainWindow.showResponseFrame(new Response());
+            Response checkedIn = databaseService.checkin(loanId);
+            MainWindow.showResponseFrame(checkedIn);
         });
         content.add(checkinButton);
     }

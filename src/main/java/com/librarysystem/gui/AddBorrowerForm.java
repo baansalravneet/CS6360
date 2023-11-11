@@ -111,11 +111,9 @@ public class AddBorrowerForm extends JFrame {
                     || _phone.length() == 0) {
                 MainWindow.showResponseFrame(new Response("All fields are mandatory"));
             } else {
-                // TODO: make this into a request object
-                // TODO: return a proper error message
-                if (databaseService.registerBorrower(_ssn, _firstName, _lastName,
-                        _email, _address, _city, _state, _phone)) MainWindow.showResponseFrame(new Response());
-                else MainWindow.showResponseFrame(new Response("Error Occurred"));
+                Response resgistered = databaseService.registerBorrower(_ssn, _firstName, _lastName,
+                        _email, _address, _city, _state, _phone);
+                MainWindow.showResponseFrame(resgistered);
             }
         });
         content.add(addButton);
