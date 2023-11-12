@@ -5,13 +5,13 @@ import time
 import sys
 import codecs
 
-books_input = 'books.csv'
-borrowers_input = 'borrowers.csv'
+books_input = 'Data/books.csv'
+borrowers_input = 'Data/borrowers.csv'
 
-books_file = codecs.open('insert_books.sql', 'w', 'utf-8')
-authors_file = codecs.open('insert_authors.sql', 'w', 'utf-8')
-book_authors_file = codecs.open('insert_book_authors.sql', 'w', 'utf-8')
-borrowers_file = codecs.open('insert_borrowers.sql', 'w', 'utf-8')
+books_file = codecs.open('Data/insert_books.sql', 'w', 'utf-8')
+authors_file = codecs.open('Data/insert_authors.sql', 'w', 'utf-8')
+book_authors_file = codecs.open('Data/insert_book_authors.sql', 'w', 'utf-8')
+borrowers_file = codecs.open('Data/insert_borrowers.sql', 'w', 'utf-8')
 
 insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOK VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
 insert_query_authors = '''REPLACE INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
