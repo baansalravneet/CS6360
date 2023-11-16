@@ -156,7 +156,10 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
 
     static void showResponseFrame(Response response) {
         if (response.isSuccess()) {
-            showSuccessFrame();
+            showSuccessFrame(
+                response.getErrorMessage() == null || response.getErrorMessage().isEmpty() ?
+                "SUCCESS" :
+                response.getErrorMessage());
         } else showErrorFrame(response.getErrorMessage());
     }
 
@@ -180,18 +183,22 @@ public class MainWindow extends JFrame { // JFrame is the main window of the app
         errorFrame.setVisible(true);
     }
 
-    private static void showSuccessFrame() {
+    private static void showSuccessFrame(String message) {
         JFrame successFrame = new JFrame("Success!");
         successFrame.setLayout(null);
         successFrame.setResizable(false);
         successFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         successFrame.setSize(200, 200);
+        JLabel messageField = new JLabel(message);
+        messageField.setHorizontalAlignment(0);
         JButton okButton = new JButton("OK");
-        okButton.setBounds(100,30,100, 20);
+        okButton.setBounds(100,50,100, 20);
+        messageField.setBounds(0, 15, 300, 20);
         okButton.addActionListener(listener -> {
             successFrame.dispose();
         });
         successFrame.getContentPane().add(okButton);
+        successFrame.getContentPane().add(messageField);
         successFrame.setSize(300, 120);
         MainWindow.centerFrameOnScreen(successFrame);
         successFrame.setVisible(true);

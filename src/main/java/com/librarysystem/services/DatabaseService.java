@@ -13,6 +13,7 @@ import com.librarysystem.models.Response;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -161,7 +162,6 @@ public class DatabaseService {
         return new Response();
     }
 
-    // TODO: find a way to set the system time.
     @Transactional
     private void handleCheckout(List<StoredBook> books, StoredBorrower borrower) {
         Date dateOut = new Date(System.currentTimeMillis());
@@ -209,18 +209,23 @@ public class DatabaseService {
         return new Response();
     }
 
-    @Transactional
     public Response registerBorrower(String ssn, String firstName, String lastName, String email, String address,
                                     String city, String state, String phone) {
-        // TODO: return the card id that is generated.
         StoredBorrower sb = new StoredBorrower(generateCardId(), ssn, firstName + " " + lastName,
                 email, address, state, city, phone);
         try {
-            borrowerRepository.save(sb);
-            return new Response();
+            StoredBorrower saved = registerBorrowerTransaction(sb);
+            return new Response(true, String.format("Borrower created with card ID: %s", saved.getCardId()));
+        } catch (DataIntegrityViolationException e) {
+            return new Response("SSN Exists");
         } catch (Exception e) {
-            return new Response("Error Occured while saving");
+            return new Response("Error Occurred");
         }
+    }
+
+    @Transactional
+    private StoredBorrower registerBorrowerTransaction(StoredBorrower sb) {
+        return borrowerRepository.save(sb);
     }
 
     private static Borrower toBorrower(StoredBorrower sb) {

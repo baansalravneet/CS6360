@@ -18,7 +18,6 @@ public class StoredBorrower {
     private String email;
     @Column(name = "Address")
     private String address;
-    // TODO: Restrict this to string of size 2 with only capital letters
     @Column(name = "State")
     private String state;
     @Column(name = "City")

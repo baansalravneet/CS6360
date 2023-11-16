@@ -4,6 +4,11 @@ public class Response {
     private boolean success;
     private String errorMessage;
 
+    public Response(boolean success, String errorMessage) {
+        this.success = true;
+        this.errorMessage = errorMessage;
+    }
+
     public Response(String errorMessage) {
         this.success = false;
         this.errorMessage = errorMessage;

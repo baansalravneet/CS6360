@@ -101,8 +101,7 @@ public class AddBorrowerForm extends JFrame {
             String _state = stateInput.getText();
             String _phone = phoneInput.getText();
 
-            if (!validSsn(_ssn)) MainWindow.showResponseFrame(new Response("Invalid SSN"));
-            else if (_firstName.length() == 0
+            if (_firstName.length() == 0
                     || _lastName.length() == 0
                     || _email.length() == 0
                     || _address.length() == 0
@@ -110,6 +109,10 @@ public class AddBorrowerForm extends JFrame {
                     || _state.length() == 0
                     || _phone.length() == 0) {
                 MainWindow.showResponseFrame(new Response("All fields are mandatory"));
+            } else if (!validSsn(_ssn))
+                MainWindow.showResponseFrame(new Response("Invalid SSN"));
+            else if (_state.length() != 2) {
+                MainWindow.showResponseFrame(new Response("State can only be 2 characters."));
             } else {
                 Response resgistered = databaseService.registerBorrower(_ssn, _firstName, _lastName,
                         _email, _address, _city, _state, _phone);

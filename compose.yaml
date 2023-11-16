@@ -5,6 +5,7 @@ services:
     environment:
       - 'MYSQL_DATABASE=LIBRARY_DATABASE'
       - 'MYSQL_ALLOW_EMPTY_PASSWORD=yes'
+      - 'TZ=America/Chicago'
     ports:
       - '3306'
     volumes:
