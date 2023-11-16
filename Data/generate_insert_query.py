@@ -14,7 +14,7 @@ book_authors_file = codecs.open('Data/insert_book_authors.sql', 'w', 'utf-8')
 borrowers_file = codecs.open('Data/insert_borrowers.sql', 'w', 'utf-8')
 
 insert_query_books = '''INSERT INTO LIBRARY_DATABASE.BOOK VALUES ('%s', '%s', '%s', '%s', %d, 1);\n'''
-insert_query_authors = '''REPLACE INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
+insert_query_authors = '''INSERT INTO LIBRARY_DATABASE.AUTHORS VALUES (%d, '%s');\n'''
 insert_query_book_authors = '''INSERT INTO LIBRARY_DATABASE.BOOK_AUTHORS VALUES ('%s', %d);\n'''
 insert_query_borrowers = '''INSERT INTO LIBRARY_DATABASE.BORROWER VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');\n'''
 
@@ -31,7 +31,7 @@ with open(borrowers_input, mode='r', newline='\n') as file:
         borrowers_data.append(row)
 
 def get_books_query(row):
-    return insert_query_books % (row['ISBN13'], row['Title'].replace("'", "\\'"), row['Cover'].replace("'", "\\'"), row['Publisher'].replace("'", "\\'"), int(row['Pages']))
+    return insert_query_books % (row['ISBN13'], row['Title'].replace("'", "''"), row['Cover'].replace("'", "''"), row['Publisher'].replace("'", "''"), int(row['Pages']))
 
 def get_authors_query(count, name):
     return insert_query_authors % (count, name)
@@ -40,25 +40,31 @@ def get_book_authors_query(book_id, author_id):
     return insert_query_book_authors % (book_id, author_id)
 
 count = 1
-author_dict = {}
+author_dict = dict()
 for row in data:
     books_file.write(get_books_query(row))
     authors = row['Authro'].split(",")
     for a in authors:
         if a == '' or a == '(None)':
             continue
-        a = a.replace("'", "\\'").strip()
-        author_dict[a] = count
+        a = a.strip().replace("'", "''")
+        if a in author_dict:
+            continue
         authors_file.write(get_authors_query(count, a))
+        author_dict[a] = count
         count = count + 1
 
+written_values = set()
 for row in data:
     authors = row['Authro'].split(",")
     for a in authors:
         if a == '' or a == '(None)':
             continue
-        a = a.replace("'", "\\'").strip()
+        a = a.strip().replace("'", "''")
+        if (row['ISBN13']+a in written_values):
+            continue
         book_authors_file.write(get_book_authors_query(row['ISBN13'], author_dict[a]))
+        written_values.add(row['ISBN13']+a)
 
 def get_borrowers_query(row):
     card_id = row['ID0000id']
