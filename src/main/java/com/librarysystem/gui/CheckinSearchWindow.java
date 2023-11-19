@@ -130,6 +130,10 @@ public class CheckinSearchWindow extends JFrame {
                 MainWindow.showResponseFrame(new Response("Please select a row"));
                 return;
             }
+            if (((String) (table.getValueAt(selectedRow[0], 7))).length() != 0) { 
+                MainWindow.showResponseFrame(new Response("Book already checked in"));
+                return;
+            }
             long loanId = Long.parseLong((String) table.getValueAt(selectedRow[0], 0));
             Response checkedIn = databaseService.checkin(loanId);
             MainWindow.showResponseFrame(checkedIn);

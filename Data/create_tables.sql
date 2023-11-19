@@ -23,7 +23,6 @@ CREATE TABLE `BOOK_AUTHORS` (
   `Isbn`        VARCHAR(255)    NOT NULL,
   `Author_id`   BIGINT          NOT NULL,
   PRIMARY KEY (`Isbn`,`Author_id`),
-  KEY `author_id_key` (`Author_id`),
   CONSTRAINT `author_foreign_key` FOREIGN KEY (`Author_id`) REFERENCES `AUTHORS` (`Author_id`),
   CONSTRAINT `book_foreign_key` FOREIGN KEY (`Isbn`) REFERENCES `BOOK` (`Isbn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
